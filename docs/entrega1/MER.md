@@ -2,12 +2,14 @@
 
 ## 1. Entidades
 
-- **Personagem**
+- **Character**
   - **NPC**
+    - **Mercante**
+    - **Inimigo**
+    - **Ferreiro**
+    - **Boss**
   - **Player**
-- **Monstro**
-  - **Comum**
-  - **Boss**
+- **Classe**
 - **Item**
 - **Recompensa**
 - **Missão**
@@ -17,12 +19,14 @@
 
 ## 2. Atributos
 
-- **Personagem**: <ins>idPersonagem</ins>, nome;
-  - **NPC**: historia, dialogo;
-  - **Player**: classe, level, vida, mana, poder, defesa;
-- **Monstro**: <ins>idMonstro</ins>, nomeMonstro, vidaMonstro, poderMonstro, expLiberado;
-  - **Comum**: localEncontrado;
-  - **Boss**: defesaMonstro, itemDropado;
+- **Personagem**: <ins>idCharacter</ins>, tipoCharacter, name;
+  - **NPC**: <ins>idNpc</ins>, tipoNpc;
+    - **Mercante**: <ins>idMercante</ins>;
+    - **Inimigo**: <ins>idInimigo</ins>;
+    - **Ferreiro**: <ins>idFerreiro</ins>;
+    - **Boss**: <ins>idBoss</ins>;
+  - **Player**: <ins>idPlayer</ins>, hp, health, dexterity, strength, vigor, faith, endurance, inteligence;
+- **Classe**: <ins>idClasse</ins>, name, healthInicial, dexterityInicial, strengthInicial, vigorInicial, faithInicial, enduranceInicial, inteligenceInicial;
 - **Item**: <ins>idItem</ins>, nomeItem, descricaoItem, levelMinimo, poderItem, defesaItem, vidaAdicional;
 - **Recompensa**: <ins>idRecompensa</ins>, expDropado, itemDropado;
 - **Missão**: <ins>idMissao</ins>, descricaoMissão, expMissao;
@@ -52,10 +56,10 @@
 - O player recebe nenhuma ou várias recompensas (0,N)
 - O inventário é recebida por nenhum ou um player (0,1)
   
-**Player _ataca_ Monstro**
+**Player _ataca_ Inimigo**
 
-- O player ataca um ou vários monstros (1,N)
-- O monstro é atacado por um ou vários players (1,N)
+- O player ataca um ou vários inimigos (1,N)
+- O inimigo é atacado por um ou vários players (1,N)
 
 **Player _está_ em um Local**
 
