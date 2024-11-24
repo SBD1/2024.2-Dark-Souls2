@@ -9,8 +9,10 @@
     - **Ferreiro**
     - **Boss**
   - **Player**
+- **InstanciaInimigo**
 - **Classe**
 - **Item**
+- **InstanciaItem**
 - **Recompensa**
 - **Missão**
 - **Mundo**
@@ -22,12 +24,14 @@
 - **Personagem**: <ins>idCharacter</ins>, tipoCharacter, name;
   - **NPC**: <ins>idNpc</ins>, tipoNpc;
     - **Mercante**: <ins>idMercante</ins>;
-    - **Inimigo**: <ins>idInimigo</ins>;
+    - **Inimigo**: <ins>idInimigo</ins>, hp, health, strenght, endurance;
     - **Ferreiro**: <ins>idFerreiro</ins>;
-    - **Boss**: <ins>idBoss</ins>;
+    - **Boss**: <ins>idBoss</ins>, hp, health, strenght, endurance;
   - **Player**: <ins>idPlayer</ins>, hp, health, dexterity, strength, vigor, faith, endurance, inteligence;
 - **Classe**: <ins>idClasse</ins>, name, healthInicial, dexterityInicial, strengthInicial, vigorInicial, faithInicial, enduranceInicial, inteligenceInicial;
+- **InstanciaInimigo**: <ins>nroInstancia</ins>
 - **Item**: <ins>idItem</ins>, nomeItem, descricaoItem, levelMinimo, poderItem, defesaItem, vidaAdicional;
+- **InstanciaItem**: <ins>nroInstancia</ins>;
 - **Recompensa**: <ins>idRecompensa</ins>, expDropado, itemDropado;
 - **Missão**: <ins>idMissao</ins>, descricaoMissão, expMissao;
 - **Mundo**: <ins>idMundo</ins>, nomeMundo, descricaoMundo;
@@ -35,6 +39,16 @@
 - **Inventário**: <ins>idInventario</ins>, qtdItens;
 
 ## 3. Relacionamentos
+
+**Player _possui_ uma Classe**
+
+- Um player possui uma classe (1,1)
+- A classe é possuida por nenhum ou vários players (0,N)
+
+**Inimigo _possui_ uma InstanciaInimigo**
+
+- Um Inimigo possui nenhuma ou várias InstanciasInimigo (0,N)
+- A InstanciaInimigo é possuida por um Inimigo (1,1)
 
 **Player _cumpre_ uma Missao**
 
