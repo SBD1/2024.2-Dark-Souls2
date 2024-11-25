@@ -44,7 +44,6 @@
 - **_Area_**: <ins>areaNro</ins>
 - **Inventario**: <ins>characterId</ins>, <ins>slot</ins>, item, itemQtd;
 - **Combate**: <ins>playerId</ins>, <ins>bossId</ins>, derrotado;
-- **ItemUpgrade**: <ins>idItem</ins>, upgradeDetalhes;
 
 
 
