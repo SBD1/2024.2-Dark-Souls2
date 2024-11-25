@@ -17,15 +17,15 @@
 - **InstanciaItem**
 - **Recompensa**
 - **Missao**
-- **Mundo**
-- **Local**
+- **Regiao**
+- **Area**
 - **Inventario**
 - **Combate**
 - **ItemUpgrade**
 
 ## 2. Atributos
 
-- **Personagem**: <ins>idCharacter</ins>, tipoCharacter, nome;
+- **Character**: <ins>idCharacter</ins>, tipoCharacter, nome;
   - **NPC**: <ins>idNpc</ins>, tipoNpc;
     - **Mercante**: <ins>idMercante</ins>;
     - **Inimigo**: <ins>idInimigo</ins>, hp, dano;
@@ -33,17 +33,19 @@
     - **Boss**: <ins>idBoss</ins>, hp, dano;
   - **Player**: <ins>idPlayer</ins>, hp, health, dexterity, strength, vigor, faith, endurance, inteligence;
 - **Classe**: <ins>idClasse</ins>, nome, healthInicial, dexterityInicial, strengthInicial, vigorInicial, faithInicial, enduranceInicial, inteligenceInicial;
-- **InstanciaInimigo**: <ins>nroInstancia</ins>
-- **Item**: <ins>idItem</ins>, nomeItem, tipoItem;
-  - **Equipavel**:
-  - **Consumivel**:
-- **InstanciaItem**: <ins>nroInstancia</ins>;
+- **_InstanciaInimigo_**: <ins>nroInstancia</ins>
+- **Item**: <ins>idItem</ins>, nomeItem, tipoItem, itemDetalhes, valor;
+  - **Equipavel**: tipoEquipavel;
+    - **Arma**: tipo, dano, attackSpeed, efeito;
+    - **Armadura**: resistencia, bonus;
+  - **Consumivel**: efeito, duracao, descricao;
+- **_InstanciaItem_**: <ins>nroInstancia</ins>;
 - **Recompensa**: <ins>idRecompensa</ins>, expDropado, itemDropado;
 - **Missao**: <ins>idMissao</ins>, descricaoMissão, expMissao;
-- **Mundo**: <ins>idMundo</ins>, nomeMundo, descricaoMundo;
-- **Local**: <ins>idLocal</ins>, nomeLocal, tamanhoLocal, descricaoLocal;
-- **Inventario**: <ins>idInventario</ins>, <ins>slot</ins>;
-- **Combate**: <ins>idPlayer</ins>, <ins>bossId</ins>, derrotado;
+- **Regiao**: <ins>regiaoId</ins>, nomeRegiao, detalhes;
+- **_Area_**: <ins>areaNro</ins>, nomeArea, descricaoArea;
+- **Inventario**: <ins>characterId</ins>, <ins>slot</ins>, item, itemQtd;
+- **Combate**: <ins>playerId</ins>, <ins>bossId</ins>, derrotado;
 - **ItemUpgrade**: <ins>idItem</ins>, upgradeDetalhes;
 
 
@@ -74,11 +76,57 @@
 
 - Um boss dropa uma InstanciaItem (1,1)
 - A instanciaItem é dropada por nenhum ou um Boss (0,1)
+
+**Boss _está_ em uma Area**
+
+- Um boss dropa uma InstanciaItem (1,1)
+- A instanciaItem é dropada por nenhum ou um Boss (0,1)
   
 **Character _possui_ Inventário**
 
 - O player possui um inventário (1,1)
 - O inventário é possuido por um player (1,1)
+
+**Player _está_ em um Area**
+
+- O player está em uma Area (1,1)
+- A Area pode ter nenhum ou vários players (0,N)
+
+**Player _equipa_ uma InstanciaItem**
+
+- O player equipa um ou vários itens (1,N)
+- O item é equipado por um player (1,1)
+
+**Player _consome_ uma InstanciaItem**
+
+- O Player consome um ou várias InstanciaItem (1,N)
+- A InstanciaItem é equipado por um Player (1,1)
+
+**Player _viaja_ para um Area**
+
+- O player viaja para um ou vários locais (1,N)
+- A area foi destino final de nenhum ou vários players (0,N)
+
+**A Area _pertence_ a uma Regiao**
+
+- A Area pertence a uma Regiao (1,1)
+- A Regiao pertence uma ou várias Area (1,1)
+
+
+**A InstanciaInimigo _está_ em uma Area**
+
+- A InstanciaInimigo está em nenhuma ou uma Area (0,1)
+- A Area tem nenhuma ou várias InstanciaInimigo (0,n)
+
+**O Mercante _está_ em uma Area**
+
+- O  Mercante está em uma Area (1,1)
+- A Area tem nenhum ou um Mercante (0,1)
+
+**O Ferreiro _está_ em uma Area**
+
+- O  Ferreiro está em uma Area (1,1)
+- A Area tem nenhum ou um Ferreiro (0,1)
 
 **Mercante _vende_ InstanciaItem**
 
@@ -90,33 +138,7 @@
 - O Ferreiro aprimora nenhum ou várias InstanciaItem (0,n)
 - O item é aprimorado por nenhum ou vários Ferreiro (0,n)
 
-**Player _está_ em um Local**
-
-- O player está em um local (1,1)
-- O local pode ter nenhum ou vários players (0,N)
-
-**Player _equipa_ um Item**
-
-- O player equipa um ou vários itens (1,N)
-- O item é equipado por um player (1,1)
-
-**Player _viaja_ para um Local**
-
-- O player viaja para um ou vários locais (1,N)
-- O local foi destino final de nenhum ou vários players (0,N)
-
-**Mundo _possui_ um Local**
-
-- O mundo possui nenhum ou vários locais (0,N)
-- O local está em um mundo (1,1)
-
-
-**Local _possui_ um Inimigo**
-
-- O local possui nenhum ou vários Inimigo (0,N)
-- O Inimigo está em um local (1,1)
-
 **Inventario _contem_ InstanciaItem**
 
 - O inventário possui nenhum ou várias InstanciaItem (0,N)
-- O InstanciaItem está em nenhum ou vários Inventario (1,1)
+- O InstanciaItem está em nenhum ou um Inventario (0,1)
