@@ -15,8 +15,6 @@
   - **Equipavel**
   - **Consumivel**
 - **InstanciaItem**
-- **Recompensa**
-- **Missao**
 - **Regiao**
 - **Area**
 - **Inventario**
@@ -40,8 +38,6 @@
     - **Armadura**: resistencia, bonus;
   - **Consumivel**: efeito, duracao, descricao;
 - **_InstanciaItem_**: <ins>nroInstancia</ins>;
-- **Recompensa**: <ins>idRecompensa</ins>, expDropado, itemDropado;
-- **Missao**: <ins>idMissao</ins>, descricaoMissão, expMissao;
 - **Regiao**: <ins>regiaoId</ins>, nomeRegiao, detalhes;
 - **_Area_**: <ins>areaNro</ins>, nomeArea, descricaoArea;
 - **Inventario**: <ins>characterId</ins>, <ins>slot</ins>, item, itemQtd;
