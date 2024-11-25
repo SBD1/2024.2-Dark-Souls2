@@ -13,6 +13,8 @@
 - **Classe**
 - **Item**
   - **Equipavel**
+    - **Arma**
+    - **Armadura**
   - **Consumivel**
 - **InstanciaItem**
 - **Regiao**
