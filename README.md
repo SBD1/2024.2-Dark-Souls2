@@ -6,5 +6,5 @@ Repositório criado pelo grupo 12 para a realização do trabalho da disciplina 
 Criar um sistema que simula elementos do jogo Dark Souls 2, permitindo:  
 - Gerenciamento de itens coletáveis.  
 - Criação de personagens e suas características.  
-- Registro de progressos e eventos no mundo do jogo.  
-- Consultas e interações baseadas em estruturas de banco de dados.  
+- Registro de progressos no mundo do jogo.  
+
