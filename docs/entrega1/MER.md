@@ -89,6 +89,11 @@
 - O player está em uma Area (1,1)
 - A Area pode ter nenhum ou vários players (0,N)
 
+**Player _consome_InstanciaItem **
+
+- O player consome InstanciaItem (0,1)
+- A InstanciaItem pode ser consumida por player (1,N)
+
 **Player _equipa_ uma InstanciaItem**
 
 - O player equipa um ou vários itens (1,N)
