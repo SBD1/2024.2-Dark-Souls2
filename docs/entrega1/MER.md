@@ -104,6 +104,12 @@
 - O Player consome um ou várias InstanciaItem (1,N)
 - A InstanciaItem é equipado por um Player (1,1)
 
+- **Player _equipa_InstanciaItem **
+
+- O player equipa um InstanciaItem (0,1)
+- A InstanciaItem pode ser equipada por player (1,N)
+
+
 **Player _viaja_ para um Area**
 
 - O player viaja para um ou vários locais (1,N)
