@@ -31,17 +31,17 @@
     - **Inimigo**: <ins>idInimigo</ins>, hp, dano;
     - **Ferreiro**: <ins>idFerreiro</ins>;
     - **Boss**: <ins>idBoss</ins>, hp, dano;
-  - **Player**: <ins>idPlayer</ins>, hp, health, dexterity, strength, vigor, faith, endurance, inteligence;
+  - **Player**:  hp, health, dexterity, strength, vigor, faith, endurance, inteligence;
 - **Classe**: <ins>idClasse</ins>, nome, healthInicial, dexterityInicial, strengthInicial, vigorInicial, faithInicial, enduranceInicial, intelligenceInicial;
 - **_InstanciaInimigo_**: <ins>nroInstancia</ins>
-- **Item**: <ins>idItem</ins>, nomeItem, tipoItem, itemDetalhes, preço;
+- **Item**: <ins>idItem</ins>, nomeItem, tipoItem, itemDetalhes, Preço;
   - **Equipavel**: tipoEquipavel;
     - **Arma**: tipo, dano, attackSpeed, efeito;
     - **Armadura**: resistencia, bonus;
   - **Consumivel**: efeito, duração, descrição;
 - **_InstanciaItem_**: <ins>nroInstancia</ins>;
 - **Regiao**: <ins>regiaoId</ins>, nomeRegiao, detalhes;
-- **_Area_**: <ins>areaNro</ins>, nomeArea, descricaoArea;
+- **_Area_**: <ins>areaNro</ins>
 - **Inventario**: <ins>characterId</ins>, <ins>slot</ins>, item, itemQtd;
 - **Combate**: <ins>playerId</ins>, <ins>bossId</ins>, derrotado;
 - **ItemUpgrade**: <ins>idItem</ins>, upgradeDetalhes;
