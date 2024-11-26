@@ -169,3 +169,9 @@
 | playerId            | INT          | NOT NULL         | Identificador do jogador.                    |
 | bossId              | INT          | NOT NULL         | Identificador do boss.                       |
 | derrotado           | BOOLEAN      | NOT NULL         | Indica se o boss foi derrotado.              |
+
+## Histórico de versões
+
+| Versão |  Data  | Descrição | Autor | 
+|:------:|:------:|:---------:|------:|
+| 1.0 | 25/11/2024 | Padronização e adição do DD | [Guilherme Basilio](https://github.com/GuilhermeB) |
