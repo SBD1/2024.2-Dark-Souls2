@@ -25,6 +25,7 @@ Criar um sistema que simula elementos do jogo Dark Souls 2, permitindo:
   - [Diagrama Entidade-Relacionamento](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega1/DER.md)
   - [Dicionário de Dados](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega1/DD.md)
   - [Modelo Relacional](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega1/MRel.md)
+  - [Apresentação](https://www.youtube.com/watch?v=rSW3RDE5qOA)
 
 ## Créditos  
 Projeto desenvolvido por **Grupo 12** para a disciplina **Sistemas de Bancos de Dados 1**.  
