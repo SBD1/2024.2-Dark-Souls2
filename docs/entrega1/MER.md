@@ -94,7 +94,7 @@
 - O player consome InstanciaItem (0,1)
 - A InstanciaItem pode ser consumida por player (1,N)
 
-**Player _equipa_ uma InstanciaItem**
+**Player _equipa_ uma_InstanciaItem**
 
 - O player equipa um ou vários itens (1,N)
 - O item é equipado por um player (1,1)
