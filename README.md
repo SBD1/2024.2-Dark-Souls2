@@ -7,6 +7,25 @@ Criar um sistema que simula elementos do jogo Dark Souls 2, permitindo:
 - Gerenciamento de itens coletáveis.  
 - Criação de personagens e suas características.  
 - Registro de progressos no mundo do jogo.
-- ## Créditos  
+
+## Alunos
+
+| Nome                                                               | Matrícula |
+| :----------------------------------------------------------------- | :-------: |
+| [Antônio José](https://github.com/antonioleaojr)       | 190102683 |
+| [Bruno Henryque Grangeiro](https://github.com/BGrangeiro) | 222024158 |
+| [Guilherme Basílio](https://github.com/GuilhermeBES) | 160007615 |
+| [João Pedro Sampaio](https://github.com/jopesmp)                 | 211039528 |
+| [Renan dos Santos Ribeiro](https://github.com/rsribeiro1)                 | 221022435 |
+
+## Entregas
+
+- Módulo 1
+  - [Modelo Entidade-Relacionamento](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega1/MER.md)
+  - [Diagrama Entidade-Relacionamento](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega1/DER.md)
+  - [Dicionário de Dados](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega1/DD.md)
+  - [Modelo Relacional](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega1/MRel.md)
+
+## Créditos  
 Projeto desenvolvido por **Grupo 12** para a disciplina **Sistemas de Bancos de Dados 1**.  
 
