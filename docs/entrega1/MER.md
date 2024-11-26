@@ -47,7 +47,7 @@
 
 
 
-## 3. Relaciontos
+## 3. Relacionamentos
 
 **Player _possui_ uma Classe**
 
