@@ -1,5 +1,5 @@
 -- Tabela principal de personagens
-CREATE TABLE IF NOT EXISTS Character (
+CREATE TABLE IF NOT EXISTS Personagem (
     idCharacter SERIAL PRIMARY KEY,
     tipoCharacter VARCHAR(20) NOT NULL,
     nome VARCHAR(100) NOT NULL
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS Character (
 CREATE TABLE IF NOT EXISTS NPC (
     idNpc SERIAL PRIMARY KEY,
     tipoNpc VARCHAR(20) NOT NULL,
-    idCharacter INT REFERENCES Character(idCharacter)
+    idCharacter INT REFERENCES Personagem(idCharacter)
 );
 
 -- Subtipos de NPC
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS Player (
     faith INT NOT NULL,
     endurance INT NOT NULL,
     intelligence INT NOT NULL,
-    idCharacter INT REFERENCES Character(idCharacter),
+    idCharacter INT REFERENCES Personagem(idCharacter),
     idClasse INT REFERENCES Classe(idClasse)
 );
 
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS Area (
 
 -- Inventário
 CREATE TABLE IF NOT EXISTS Inventario (
-    characterId INT REFERENCES Character(idCharacter),
+    characterId INT REFERENCES Personagem(idCharacter),
     slot INT NOT NULL,
     item INT REFERENCES InstanciaItem(nroInstancia),
     itemQtd INT NOT NULL,
