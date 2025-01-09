@@ -2,7 +2,7 @@
 
 ## 1. Entidades
 
-- **Personagem**
+- **Character**
   - **NPC**
     - **Mercante**
     - **Inimigo**
@@ -25,7 +25,7 @@
 
 ## 2. Atributos
 
-- **Personagem**: <ins>idCharacter</ins>, tipoCharacter, nome;
+- **Character**: <ins>idCharacter</ins>, tipoCharacter, nome;
   - **NPC**: <ins>idNpc</ins>, tipoNpc;
     - **Mercante**: <ins>idMercante</ins>;
     - **Inimigo**: <ins>idInimigo</ins>, hp, dano;
@@ -80,7 +80,7 @@
 - Um boss dropa uma InstanciaItem (1,1)
 - A instanciaItem é dropada por nenhum ou um Boss (0,1)
   
-**Personagem _possui_ Inventário**
+**Character _possui_ Inventário**
 
 - O player possui um inventário (1,1)
 - O inventário é possuido por um player (1,1)
