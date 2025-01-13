@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS Player (
 CREATE TABLE IF NOT EXISTS Classe (
     idClasse SERIAL PRIMARY KEY,
     nome VARCHAR(50) NOT NULL,
-    healthInicial INT NOT NULL,
+    levelInicial INT NOT NULL,
     dexterityInicial INT NOT NULL,
     strengthInicial INT NOT NULL,
     vigorInicial INT NOT NULL,
