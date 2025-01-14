@@ -19,17 +19,22 @@ def conectar_banco():
 
 # Função para exibir o título e criar o personagem
 def criar_personagem():
-    titulo = """
+    titulo = r"""
  ______   _______  _______  _          _______  _______           _        _______    _______ 
 (  __  \ (  ___  )(  ____ )| \    /\  (  ____ \(  ___  )|\     /|( \      (  ____ \  / ___   )
 | (  \  )| (   ) || (    )||  \  / /  | (    \/| (   ) || )   ( || (      | (    \/  \/   )  |
 | |   ) || (___) || (____)||  (_/ /   | (_____ | |   | || |   | || |      | (_____       /   )
 | |   | ||  ___  ||     __)|   _ (    (_____  )| |   | || |   | || |      (_____  )    _/   / 
 | |   ) || (   ) || (\ (   |  ( \ \         ) || |   | || |   | || |            ) |   /   _/  
-| (__/  )| )   ( || ) \ \__|  /  \ \  /\____) || (___) || (___) || (____/\/\____) |  (   (__//
+| (__/  )| )   ( || ) \ \__|  /  \ \  /\____) || (___) || (___) || (____/\/\____) |  (   (__/\JR
 (______/ |/     \||/   \__/|_/    \/  \_______)(_______)(_______)(_______/\_______)  \_______/
     """
+
     print(titulo, end = '')
+    print("\nDark Souls 2 é um jogo de ação e RPG desenvolvido pela FromSoftware, lançado em 2014.")
+    print("O jogo é conhecido por seu alto nível de dificuldade e uma história rica e complexa.")
+    print("Em Dark Souls 2, o jogador assume o papel de um personagem que busca entender seu destino enquanto enfrenta inimigos poderosos e explora um mundo devastado.")
+    print("A jornada está apenas começando. Você está em um local seguro, mas as opções à frente são muitas.")
     
     nome = input("\nDigite o nome do seu personagem: ")
 
@@ -60,7 +65,8 @@ def criar_personagem():
 
     print(f"Parabéns! Seu personagem {nome} é um {classe_escolhida}.")
     print("\nAgora, você está pronto para começar sua jornada!")
-    
+    print("\nVocê se encontra na tranquila cidade de Majula. Esta cidade é um refúgio para almas perdidas como você.")
+    print("Aqui, você pode escolher para onde deseja ir. Você pode se mover para as seguintes direções:")
     # Direções disponíveis
     direcoes = {
         "norte": "n", 
