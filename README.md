@@ -20,13 +20,13 @@ Criar um sistema que simula elementos do jogo Dark Souls 2, permitindo:
 
 ## Entregas
 
-- Módulo 1
+- Entrega 1
   - [Modelo Entidade-Relacionamento](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega1/MER.md)
   - [Diagrama Entidade-Relacionamento](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega1/DER.md)
   - [Dicionário de Dados](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega1/DD.md)
   - [Modelo Relacional](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega1/MRel.md)
   - [Apresentação](https://www.youtube.com/watch?v=rSW3RDE5qOA)
-- Módulo 2
+- Entrega 2
   - [DDL](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/jogo/db/ddl.sql)
   - [DML](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/jogo/db/dml.sql)
   - [Apresentação](https://www.youtube.com/watch?v=msGEqk2WApU)
