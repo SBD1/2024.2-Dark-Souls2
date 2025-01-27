@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS Player (
     faith INT NOT NULL,
     endurance INT NOT NULL,
     intelligence INT NOT NULL,
+    idSalaAtual INT NOT NULL,
     idCharacter INT REFERENCES Personagem(idCharacter),
     idClasse INT REFERENCES Classe(idClasse)
 );
@@ -131,18 +132,29 @@ CREATE TABLE IF NOT EXISTS ItemUpgrade (
     upgradeDetalhes TEXT NOT NULL
 );
 
--- Região e Área
-CREATE TABLE IF NOT EXISTS Regiao (
-    regiaoId SERIAL PRIMARY KEY,
-    nomeRegiao VARCHAR(100) NOT NULL,
-    detalhes TEXT
+-- Região e sala
+CREATE TABLE regiao (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    descricao TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Area (
-    areaNro SERIAL PRIMARY KEY,
-    nomeArea VARCHAR(100) NOT NULL,
-    idRegiao INT REFERENCES Regiao(regiaoId)
+CREATE TABLE sala (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    descricao TEXT NOT NULL,
+    regiao_id INT NOT NULL,
+    norte INT,
+    sul INT,
+    leste INT,
+    oeste INT,
+    FOREIGN KEY (regiao_id) REFERENCES regiao (id),
+    FOREIGN KEY (norte) REFERENCES sala (id),
+    FOREIGN KEY (sul) REFERENCES sala (id),
+    FOREIGN KEY (leste) REFERENCES sala (id),
+    FOREIGN KEY (oeste) REFERENCES sala (id)
 );
+
 
 -- Inventário
 CREATE TABLE IF NOT EXISTS Inventario (

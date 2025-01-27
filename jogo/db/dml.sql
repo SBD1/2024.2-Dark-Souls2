@@ -16,7 +16,7 @@ VALUES
 ('NPC', 'Blacksmith Lenigrast'), -- Ferreiro
 ('NPC', 'Straid of Olaphis'), -- Mercante
 ('NPC', 'Hollow Soldier'), -- Inimigo
-('NPC', 'The Pursuer'); -- Boss
+('NPC', 'The Last Giant'); -- Boss
 
 -- Associando Personagens à tabela NPC
 INSERT INTO NPC (tipoNpc, idCharacter)
@@ -25,7 +25,7 @@ VALUES
 ('Ferreiro', 2), -- Blacksmith Lenigrast
 ('Mercante', 3), -- Straid of Olaphis
 ('Inimigo', 4), -- Hollow Soldier
-('Boss', 5); -- The Pursuer
+('Boss', 5); -- The Last Giant
 
 -- Inserindo detalhes em subtipos de NPC
 -- Mercante
@@ -79,7 +79,7 @@ VALUES
 ('Aumenta regeneração de stamina', 60, 'Ideal para combates prolongados ou fuga rápida', 4); -- Green Blossom
 
 -- Inserindo regiões na tabela Regiao
-INSERT INTO Regiao (nomeRegiao, detalhes)
+INSERT INTO Regiao (nome, descricao)
 VALUES
 ('Majula', 'A pacata vila que serve como o principal ponto de encontro para os viajantes.'),
 ('Forest of Fallen Giants', 'Uma floresta em ruínas repleta de soldados ocos e segredos.'),
@@ -87,11 +87,39 @@ VALUES
 ('The Lost Bastille', 'Uma fortaleza sombria repleta de prisioneiros enlouquecidos.'),
 ('Drangleic Castle', 'O castelo majestoso e sombrio do reino de Drangleic.');
 
--- Inserindo áreas associadas às regiões na tabela Area
-INSERT INTO Area (nomeArea, idRegiao)
-VALUES
-('The Far Fire', 1), -- Majula
-('Cardinal Tower', 2), -- Forest of Fallen Giants
-('Heides Ruins', 3), -- Heides Tower of Flame
-('Sinners Rise', 4), -- The Lost Bastille
-('Throne Room', 5); -- Drangleic Castle
+-- Salas em Majula
+INSERT INTO sala (nome, descricao, regiao_id) VALUES
+('Praça Principal', 'O ponto central de Majula, com vista para o oceano, há um Homem com barba e cabelo grisalho ao lado de uma carroça.', 1),
+('Poço', 'Um poço profundo com rumores de conter segredos.', 1),
+('Mercado', 'Local onde os mercantes ficam.', 1);
+
+-- Salas na Forest of Fallen Giants
+INSERT INTO sala (nome, descricao, regiao_id) VALUES
+('Entrada da Floresta', 'A entrada coberta por árvores densas.', 2),
+('Ruínas', 'Estruturas antigas parcialmente cobertas por vegetação, há alguns lobos.', 2),
+('Ponte', 'Uma ponte estreita conectando partes da floresta.', 2),
+('Cavernas', 'Um sistema de cavernas escuras e úmidas, aranhas por todo o lado.', 2),
+('Sala do Chefe', 'Um espaço amplo onde está adormecido em um grande trono um grande inimigo conhecido como The Last Giant.', 2);
+
+-- Salas em Heide's Tower of Flame
+INSERT INTO sala (nome, descricao, regiao_id) VALUES
+('Costa', 'A costa com o som relaxante das ondas.', 3),
+('Torre Iluminada', 'Uma torre antiga que brilha com uma luz misteriosa.', 3),
+('Passagem Submersa', 'Uma passagem parcialmente coberta por água.', 3),
+('Sala do Dragão', 'Um local onde uma poderosa criatura reside.', 3);
+
+-- Salas em The Lost Bastille
+INSERT INTO sala (nome, descricao, regiao_id) VALUES
+('Entrada do Forte', 'Uma entrada pesada, protegida por grandes portas.', 4),
+('Celas', 'Pequenos quartos sombrios para prisioneiros.', 4),
+('Corredor Principal', 'Um longo corredor com pouca iluminação.', 4),
+('Torre de Vigia', 'Uma torre alta usada para observação.', 4);
+
+-- Salas em Drangleic Castle
+INSERT INTO sala (nome, descricao, regiao_id) VALUES
+('Entrada', 'O imponente portão principal do castelo.', 5),
+('Sala do Trono', 'Um salão majestoso com um trono ao fundo.', 5),
+('Biblioteca', 'Uma sala cheia de livros antigos e poeira.', 5),
+('Sala do Guarda Real', 'Uma sala onde os guardas do rei repousam.', 5),
+('Masmorras', 'Uma área fria e úmida usada para manter prisioneiros.', 5);
+
