@@ -123,3 +123,33 @@ INSERT INTO sala (nome, descricao, regiao_id) VALUES
 ('Sala do Guarda Real', 'Uma sala onde os guardas do rei repousam.', 5),
 ('Masmorras', 'Uma área fria e úmida usada para manter prisioneiros.', 5);
 
+-- Majula
+UPDATE sala SET norte = 2, sul = 4, leste = 3, oeste = NULL WHERE id = 1; -- Praça Principal
+UPDATE sala SET norte = NULL, sul = 1, leste = NULL, oeste = NULL WHERE id = 2; -- Poço
+UPDATE sala SET norte = NULL, sul = NULL, leste = NULL, oeste = 1 WHERE id = 3; -- Mercado
+
+-- Forest of Fallen Giants
+UPDATE sala SET norte = 1, sul = 5, leste = 1, oeste = 9 WHERE id = 4; -- Entrada da Floresta
+UPDATE sala SET norte = 4, sul = 6, leste = NULL, oeste = NULL WHERE id = 5; -- Ruínas
+UPDATE sala SET norte = 5, sul = 7, leste = NULL, oeste = NULL WHERE id = 6; -- Ponte
+UPDATE sala SET norte = 6, sul = 8, leste = NULL, oeste = NULL WHERE id = 7; -- Cavernas
+UPDATE sala SET norte = 7, sul = NULL, leste = NULL, oeste = NULL WHERE id = 8; -- Sala do Chefe
+
+-- Heide's Tower of Flame
+UPDATE sala SET norte = NULL, sul = 10, leste = 4, oeste = 13 WHERE id = 9; -- Costa
+UPDATE sala SET norte = 9, sul = 11, leste = NULL, oeste = NULL WHERE id = 10; -- Torre Iluminada
+UPDATE sala SET norte = 10, sul = 12, leste = NULL, oeste = NULL WHERE id = 11; -- Passagem Submersa
+UPDATE sala SET norte = 11, sul = NULL, leste = NULL, oeste = NULL WHERE id = 12; -- Sala do Dragão
+
+-- The Lost Bastille
+UPDATE sala SET norte = NULL, sul = 14, leste = 9, oeste = 17 WHERE id = 13; -- Entrada do Forte
+UPDATE sala SET norte = 13, sul = 15, leste = NULL, oeste = NULL WHERE id = 14; -- Celas
+UPDATE sala SET norte = 14, sul = 16, leste = NULL, oeste = NULL WHERE id = 15; -- Corredor Principal
+UPDATE sala SET norte = 15, sul = NULL, leste = NULL, oeste = NULL WHERE id = 16; -- Torre de Vigia
+
+-- Drangleic Castle
+UPDATE sala SET norte = NULL, sul = 18, leste = 13, oeste = NULL WHERE id = 17; -- Entrada
+UPDATE sala SET norte = 17, sul = 19, leste = NULL, oeste = NULL WHERE id = 18; -- Sala do Trono
+UPDATE sala SET norte = 18, sul = 20, leste = NULL, oeste = NULL WHERE id = 19; -- Biblioteca
+UPDATE sala SET norte = 19, sul = 21, leste = NULL, oeste = NULL WHERE id = 20; -- Sala do Guarda Real
+UPDATE sala SET norte = 20, sul = NULL, leste = NULL, oeste = NULL WHERE id = 21; -- Masmorras
