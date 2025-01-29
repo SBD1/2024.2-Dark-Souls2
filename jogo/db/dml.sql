@@ -83,23 +83,23 @@ INSERT INTO Regiao (nome, descricao)
 VALUES
 ('Majula', 'A pacata vila que serve como o principal ponto de encontro para os viajantes.'),
 ('Forest of Fallen Giants', 'Uma floresta em ruínas repleta de soldados ocos e segredos.'),
-('Heides Tower of Flame', 'Uma área costeira com torres antigas iluminadas por chamas.'),
+('Heides Tower of Flame', 'Uma area costeira com torres antigas iluminadas por chamas.'),
 ('The Lost Bastille', 'Uma fortaleza sombria repleta de prisioneiros enlouquecidos.'),
 ('Drangleic Castle', 'O castelo majestoso e sombrio do reino de Drangleic.');
 
 -- Salas em Majula
 INSERT INTO sala (nome, descricao, regiao_id) VALUES
-('Praça Principal', 'O ponto central de Majula, com vista para o oceano, há um Homem com barba e cabelo grisalho ao lado de uma carroça.', 1),
+('Praca Principal', 'O ponto central de Majula, com vista para o oceano, ha um Homem com barba e cabelo grisalho ao lado de uma carroca.', 1),
 ('Poço', 'Um poço profundo com rumores de conter segredos.', 1),
 ('Mercado', 'Local onde os mercantes ficam.', 1);
 
 -- Salas na Forest of Fallen Giants
 INSERT INTO sala (nome, descricao, regiao_id) VALUES
-('Entrada da Floresta', 'A entrada coberta por árvores densas.', 2),
-('Ruínas', 'Estruturas antigas parcialmente cobertas por vegetação, há alguns lobos.', 2),
+('Entrada da Floresta', 'A entrada coberta por arvores densas.', 2),
+('Ruinas', 'Estruturas antigas parcialmente cobertas por vegetação, ha alguns lobos.', 2),
 ('Ponte', 'Uma ponte estreita conectando partes da floresta.', 2),
-('Cavernas', 'Um sistema de cavernas escuras e úmidas, aranhas por todo o lado.', 2),
-('Sala do Chefe', 'Um espaço amplo onde está adormecido em um grande trono um grande inimigo conhecido como The Last Giant.', 2);
+('Cavernas', 'Um sistema de cavernas escuras e umidas, aranhas por todo o lado.', 2),
+('Sala do Chefe', 'Um espaço amplo onde esta adormecido em um grande trono um grande inimigo conhecido como The Last Giant.', 2);
 
 -- Salas em Heide's Tower of Flame
 INSERT INTO sala (nome, descricao, regiao_id) VALUES
@@ -112,13 +112,13 @@ INSERT INTO sala (nome, descricao, regiao_id) VALUES
 INSERT INTO sala (nome, descricao, regiao_id) VALUES
 ('Entrada do Forte', 'Uma entrada pesada, protegida por grandes portas.', 4),
 ('Celas', 'Pequenos quartos sombrios para prisioneiros.', 4),
-('Corredor Principal', 'Um longo corredor com pouca iluminação.', 4),
-('Torre de Vigia', 'Uma torre alta usada para observação.', 4);
+('Corredor Principal', 'Um longo corredor com pouca iluminacao.', 4),
+('Torre de Vigia', 'Uma torre alta usada para observacao.', 4);
 
 -- Salas em Drangleic Castle
 INSERT INTO sala (nome, descricao, regiao_id) VALUES
-('Entrada', 'O imponente portão principal do castelo.', 5),
-('Sala do Trono', 'Um salão majestoso com um trono ao fundo.', 5),
+('Entrada', 'O imponente portao principal do castelo.', 5),
+('Sala do Trono', 'Um salao majestoso com um trono ao fundo.', 5),
 ('Biblioteca', 'Uma sala cheia de livros antigos e poeira.', 5),
 ('Sala do Guarda Real', 'Uma sala onde os guardas do rei repousam.', 5),
 ('Masmorras', 'Uma área fria e úmida usada para manter prisioneiros.', 5);

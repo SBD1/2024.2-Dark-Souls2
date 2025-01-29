@@ -37,22 +37,6 @@ CREATE TABLE IF NOT EXISTS Boss (
     idNpc INT REFERENCES NPC(idNpc)
 );
 
--- Player
-CREATE TABLE IF NOT EXISTS Player (
-    idPlayer SERIAL PRIMARY KEY,
-    hp INT NOT NULL,
-    health INT NOT NULL,
-    dexterity INT NOT NULL,
-    strength INT NOT NULL,
-    vigor INT NOT NULL,
-    faith INT NOT NULL,
-    endurance INT NOT NULL,
-    intelligence INT NOT NULL,
-    idSalaAtual INT NOT NULL,
-    idCharacter INT REFERENCES Personagem(idCharacter),
-    idClasse INT REFERENCES Classe(idClasse)
-);
-
 -- Classe
 CREATE TABLE IF NOT EXISTS Classe (
     idClasse SERIAL PRIMARY KEY,
@@ -64,6 +48,22 @@ CREATE TABLE IF NOT EXISTS Classe (
     faithInicial INT NOT NULL,
     enduranceInicial INT NOT NULL,
     intelligenceInicial INT NOT NULL
+);
+
+-- Player
+CREATE TABLE IF NOT EXISTS Player (
+    idPlayer SERIAL PRIMARY KEY,
+    hpAtual INT NOT NULL,
+    health INT NOT NULL,
+    dexterity INT NOT NULL,
+    strength INT NOT NULL,
+    vigor INT NOT NULL,
+    faith INT NOT NULL,
+    endurance INT NOT NULL,
+    intelligence INT NOT NULL,
+    idSalaAtual INT NOT NULL,
+    idCharacter INT REFERENCES Personagem(idCharacter),
+    idClasse INT REFERENCES Classe(idClasse)
 );
 
 -- InstanciaInimigo

@@ -18,7 +18,7 @@ def conectar_banco():
         return None
 
 # Função para exibir o título e criar o personagem
-def inicio():
+def inicio(cursor):
     titulo = r"""
  ______   _______  _______  _          _______  _______           _        _______    _______ 
 (  __  \ (  ___  )(  ____ )| \    /\  (  ____ \(  ___  )|\     /|( \      (  ____ \  / ___   )
@@ -35,9 +35,32 @@ def inicio():
     print("O jogo é conhecido por seu alto nível de dificuldade e uma história rica e complexa.")
     print("Em Dark Souls 2, o jogador assume o papel de um personagem que busca entender seu destino enquanto enfrenta inimigos poderosos e explora um mundo devastado.")
 
-def criar_personagem(cursor, conn):
-    print("A jornada está apenas começando. Você está em um local seguro, mas as opções à frente são muitas.")
-    
+    # Buscar todos os personagens disponíveis no banco
+    query = "SELECT p.idPlayer, pe.nome FROM Player p JOIN Personagem pe on p.idCharacter = pe.idCharacter;"
+    cursor.execute(query)
+    personagens = cursor.fetchall()
+
+    if not personagens:
+        print("Nenhum personagem encontrado. Criando um novo...")
+        criar_personagem(cursor)
+        return
+
+    print("\nEscolha um personagem para jogar:")
+    for i, (id_player, nome) in enumerate(personagens, 1):
+        print(f"{i}. {nome} (ID: {id_player})")
+
+    while True:
+        try:
+            escolha = int(input("\nDigite o número do personagem que deseja jogar: "))
+            if 1 <= escolha <= len(personagens):
+                return personagens[escolha - 1][0]  # Retorna o ID do personagem escolhido
+            else:
+                print("Escolha inválida. Tente novamente.")
+        except ValueError:
+            print("Entrada inválida. Digite um número válido.")
+
+
+def criar_personagem(cursor):
     nome = input("\nDigite o nome do seu personagem: ")
 
     # Exibir as opções de classes
@@ -92,7 +115,7 @@ def criar_personagem(cursor, conn):
     # Passo 2: Inserir o jogador na tabela Player
     query_insert_player = """
     INSERT INTO Player (
-        idCharacter, hp, health, dexterity, strength, vigor, faith, endurance, intelligence, 
+        idCharacter, hpAtual, health, dexterity, strength, vigor, faith, endurance, intelligence, 
         idSalaAtual, idClasse
     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
@@ -109,78 +132,129 @@ def criar_personagem(cursor, conn):
     conn.commit()
     print(f"Parabéns! Seu personagem {nome} foi criado como um {classe_escolhida} e salvo no banco de dados.")
     print("\nAgora, você está pronto para começar sua jornada!")
-
-    print("\nVocê se encontra na tranquila cidade de Majula. Esta cidade é um refúgio para almas perdidas como você.")
+    print("A jornada está apenas começando. Você está em um local seguro, mas as opções à frente são muitas.")
+    print("\nVocê se encontra na tranquila cidade de Majulam, você está na praça principal da cidade, ao norte encontra-se o poço, à leste o mercado e a sul a floresta.")
     print("Aqui, você pode escolher para onde deseja ir. Você pode se mover para as seguintes direções:")
 
-def player_mover():
-    # Direções disponíveis
-    direcoes = {
-        "norte": "n", 
-        "sul": "s", 
-        "leste": "l", 
-        "oeste": "o"
-    }
+def buscar_sala_atual(cursor, id_player):
+    query = "SELECT idSalaAtual FROM Player WHERE idPlayer = %s;"
+    cursor.execute(query, (id_player,))
+    resultado = cursor.fetchone()
+
+    if resultado:
+        return resultado[0]  # Retorna o ID da sala atual
+    else:
+        print("Jogador não encontrado.")
+        return None
+
+def buscar_detalhes_sala(cursor, id_player):
+    query = """
+    SELECT s.id, s.nome, s.descricao 
+    FROM Player p
+    JOIN Sala s ON p.idSalaAtual = s.id
+    WHERE p.idPlayer = %s;
+    """
+    cursor.execute(query, (id_player,))
+    resultado = cursor.fetchone()
+
+    if resultado:
+        id_sala, nome_sala, descricao_sala = resultado
+        return {"id": id_sala, "nome": nome_sala, "descricao": descricao_sala}
+    else:
+        print("Jogador ou sala não encontrada.")
+        return None
     
-    # Localizações e descrições
-    locais = {
-        "norte": ("A Floresta dos Gigantes Caídos", "Uma floresta densa e perigosa, cheia de criaturas hostis."),
-        "sul": ("A Fortaleza de Heide", "Uma antiga fortaleza em ruínas, cheia de inimigos e mistérios."),
-        "leste": ("A Necrópolis de Shulva", "Um cemitério sombrio, onde as almas perdidas descansam em paz."),
-        "oeste": ("O Castelo de Drangleic", "Um imponente castelo de pedra, lar de inúmeros desafios e segredos.")
-    }
-    
-    # Mapeando abreviações para as direções completas
-    abreviacoes_para_direcao = {v: k for k, v in direcoes.items()}
-    
-    # Escolha de movimento
+def movePlayer(cursor, sala_atual_id):
+    print(sala_atual_id)
     while True:
-        escolha_direcao = input("\nDigite uma direção (norte, sul, leste, oeste ou suas abreviações): ").lower()
-        
-        # Se a escolha for abreviação, converte para a direção completa
-        if escolha_direcao in abreviacoes_para_direcao:
-            direcao_escolhida = abreviacoes_para_direcao[escolha_direcao]
-        elif escolha_direcao in locais:
-            direcao_escolhida = escolha_direcao
-        else:
-            print("Direção inválida. Por favor, escolha uma direção válida (norte, sul, leste, oeste ou abreviações).")
-            continue
-        
-        # Obter nome e descrição do local escolhido
-        local_nome, local_descricao = locais[direcao_escolhida]
+        print("\nPara onde deseja se mover?")
+        print("1. Norte")
+        print("2. Sul")
+        print("3. Leste")
+        print("4. Oeste")
+        print("5. Cancelar")
 
-        print(f"\nVocê escolheu ir para {local_nome}.")
-        print(f"Descrição: {local_descricao}")
-        
-        confirmacao = input(f"Deseja confirmar essa escolha? (s/n): ").lower()
-        if confirmacao == 's':
-            print(f"\nVocê começa a sua jornada para o {local_nome}.")
+        escolha = input("\nEscolha uma opção: ")
+
+        direcoes = {
+            "1": "norte",
+            "2": "sul",
+            "3": "leste",
+            "4": "oeste"
+        }
+
+        if escolha == "5":
+            print("\nVocê decidiu permanecer onde está.")
             break
-        else:
-            print("Escolha de direção cancelada. Vamos tentar novamente.")
 
-def menu():
-    salaAtual = "Teste"
-    descricaoSalaAtual = "Testando"
-    print(f"Você se encontra em: {salaAtual}, {descricaoSalaAtual}")
+        if escolha in direcoes:
+            direcao = direcoes[escolha]
+
+            # Consultar a sala para onde a direção escolhida leva
+            query = f"SELECT {direcao} FROM Sala WHERE id = %s;"
+            cursor.execute(query, (sala_atual_id,))
+            resultado = cursor.fetchone()
+
+            if resultado and resultado[0]:  # Se houver uma sala conectada nessa direção
+                nova_sala = resultado[0]
+
+                # Buscar o nome da nova sala
+                query_nome_sala = "SELECT nome FROM Sala WHERE id = %s;"
+                cursor.execute(query_nome_sala, (nova_sala,))
+                nome_sala = cursor.fetchone()[0]
+
+                # Atualizar a sala do jogador
+                query_update_player = "UPDATE Player SET idSalaAtual = %s WHERE idPlayer = %s;"
+                cursor.execute(query_update_player, (nova_sala, idPlayer))
+                conn.commit()
+
+                print(f"\nVocê se move para {nome_sala}.")
+                return nova_sala  # Retorna a nova sala para atualização no menu
+
+            else:
+                print("\nNão há nada nessa direção. Escolha outro caminho.")
+        else:
+            print("\nOpção inválida. Escolha novamente.")
+
+
+
+def menu(cursor, conn, idPlayer):
+    while True:
+        # Buscar informações da sala atual
+        sala_atual = buscar_detalhes_sala(cursor, idPlayer)
+
+        if sala_atual:
+            print("\n====================================================================")
+            print(f"Você se encontra em: {sala_atual['nome']}")
+            print(f"Descrição: {sala_atual['descricao']}")
+            print("====================================================================")
+
+        # Exibir opções para o jogador
+        print("O que deseja fazer?")
+        print("1. Verificar redondezas")
+        print("2. Movimentar-se")
+        print("3. Sair do jogo")
+
+        escolha = input("\nEscolha uma opção: ")
+
+        if escolha == "1":
+            print("\nVocê olha ao redor, mas por enquanto não há nada interessante por aqui.")
+        
+        elif escolha == "2":
+            movePlayer(cursor, sala_atual["id"])
+        
+        elif escolha == "3":
+            print("\nVocê decidiu encerrar sua jornada por agora. Até a próxima!")
+            break  # Sai do loop e encerra o menu
+        
+        else:
+            print("\nOpção inválida. Tente novamente.")
 
 
 # Executar o jogo
 if __name__ == "__main__":
     conn = conectar_banco()
     cursor = conn.cursor()
-
-    # Verificar se a tabela está vazia
-    query = f"SELECT COUNT(*) FROM Player;"
-    cursor.execute(query)
-    resultado = cursor.fetchone()
-
-    if resultado and resultado[0] == 0:  # Se o COUNT retornar 0
-        print(f"Tabela 'Player' está vazia. Executando função...")
-       #
-    else:
-        print(f"Tabela 'Player' não está vazia. Nenhuma ação foi tomada.")
-
-    inicio()
-    criar_personagem(cursor, conn)
-    menu()
+    idPlayer = inicio(cursor)
+    menu(cursor, conn, idPlayer)
+    
