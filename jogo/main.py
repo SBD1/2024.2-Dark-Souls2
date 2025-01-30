@@ -7,7 +7,7 @@ def conectar_banco():
         conn = psycopg2.connect(
             dbname="dark_souls_mud",  # Nome do banco de dados
             user="postgres",          # Nome do usuário
-            password="password",      # Senha do usuário
+            password="teste",      # Senha do usuário
             host="localhost",         # Host do banco de dados
             port="5432"               # Porta padrão do PostgreSQL
         )
@@ -42,23 +42,29 @@ def inicio(cursor):
 
     if not personagens:
         print("Nenhum personagem encontrado. Criando um novo...")
-        criar_personagem(cursor)
-        return
+        id_player = criar_personagem(cursor)
+        return id_player
 
-    print("\nEscolha um personagem para jogar:")
-    for i, (id_player, nome) in enumerate(personagens, 1):
-        print(f"{i}. {nome} (ID: {id_player})")
+    escolha = int(input("1. Criar novo personagem\n2. Escolher personagem já criado\nEscolha uma opção: "))
+    while escolha != 1 or escolha != 2:
+        if escolha == 1:
+            id_player = criar_personagem(cursor)
+            return id_player
+        elif escolha == 2:
+            print("\nEscolha um personagem para jogar:")
+            for i, (id_player, nome) in enumerate(personagens, 1):
+                print(f"{i}. {nome} (ID: {id_player})")
 
-    while True:
-        try:
-            escolha = int(input("\nDigite o número do personagem que deseja jogar: "))
-            if 1 <= escolha <= len(personagens):
-                return personagens[escolha - 1][0]  # Retorna o ID do personagem escolhido
-            else:
-                print("Escolha inválida. Tente novamente.")
-        except ValueError:
-            print("Entrada inválida. Digite um número válido.")
-
+            while True:
+                try:
+                    escolha = int(input("\nDigite o número do personagem que deseja jogar: "))
+                    if 1 <= escolha <= len(personagens):
+                        return personagens[escolha - 1][0]  # Retorna o ID do personagem escolhido
+                    else:
+                        print("Escolha inválida. Tente novamente.")
+                except ValueError:
+                    print("Entrada inválida. Digite um número válido.")
+    
 
 def criar_personagem(cursor):
     nome = input("\nDigite o nome do seu personagem: ")
@@ -100,7 +106,7 @@ def criar_personagem(cursor):
 
     if not classe:
         print("Erro: Não foi possível encontrar os atributos da classe escolhida no banco de dados.")
-        return
+        return None  # Retorna None para indicar erro
 
     id_classe, level, dexterity, strength, vigor, faith, endurance, intelligence = classe
 
@@ -112,12 +118,13 @@ def criar_personagem(cursor):
     cursor.execute(query_insert_personagem, ("Player", nome))
     id_character = cursor.fetchone()[0]
 
-    # Passo 2: Inserir o jogador na tabela Player
+    # Passo 2: Inserir o jogador na tabela Player e capturar o ID gerado
     query_insert_player = """
     INSERT INTO Player (
         idCharacter, hpAtual, health, dexterity, strength, vigor, faith, endurance, intelligence, 
         idSalaAtual, idClasse
-    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    RETURNING idPlayer;
     """
     hp = 100 + (level * 10)  # Exemplo: HP inicial baseado no level
     health = hp  # Health inicial igual ao HP
@@ -128,13 +135,19 @@ def criar_personagem(cursor):
         id_sala_atual, id_classe
     ))
 
+    id_player = cursor.fetchone()[0]  # Capturar o ID do player recém-criado
+
     # Confirmar as mudanças no banco de dados
     conn.commit()
+
+
     print(f"Parabéns! Seu personagem {nome} foi criado como um {classe_escolhida} e salvo no banco de dados.")
     print("\nAgora, você está pronto para começar sua jornada!")
     print("A jornada está apenas começando. Você está em um local seguro, mas as opções à frente são muitas.")
     print("\nVocê se encontra na tranquila cidade de Majulam, você está na praça principal da cidade, ao norte encontra-se o poço, à leste o mercado e a sul a floresta.")
     print("Aqui, você pode escolher para onde deseja ir. Você pode se mover para as seguintes direções:")
+    return id_player  # Retorna o ID do personagem criado
+
 
 def buscar_sala_atual(cursor, id_player):
     query = "SELECT idSalaAtual FROM Player WHERE idPlayer = %s;"
@@ -218,7 +231,7 @@ def movePlayer(cursor, sala_atual_id):
 
 
 
-def menu(cursor, conn, idPlayer):
+def menu(cursor, idPlayer):
     while True:
         # Buscar informações da sala atual
         sala_atual = buscar_detalhes_sala(cursor, idPlayer)
@@ -256,5 +269,5 @@ if __name__ == "__main__":
     conn = conectar_banco()
     cursor = conn.cursor()
     idPlayer = inicio(cursor)
-    menu(cursor, conn, idPlayer)
+    menu(cursor, idPlayer)
     

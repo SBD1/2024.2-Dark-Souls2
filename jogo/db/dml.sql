@@ -90,7 +90,7 @@ VALUES
 -- Salas em Majula
 INSERT INTO sala (nome, descricao, regiao_id) VALUES
 ('Praca Principal', 'O ponto central de Majula, com vista para o oceano, ha um Homem com barba e cabelo grisalho ao lado de uma carroca.', 1),
-('Poço', 'Um poço profundo com rumores de conter segredos.', 1),
+('Lago', 'Um lago profundo com rumores de conter segredos.', 1),
 ('Mercado', 'Local onde os mercantes ficam.', 1);
 
 -- Salas na Forest of Fallen Giants
