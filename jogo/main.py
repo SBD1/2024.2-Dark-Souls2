@@ -7,7 +7,7 @@ def conectar_banco():
         conn = psycopg2.connect(
             dbname="dark_souls_mud",  # Nome do banco de dados
             user="postgres",          # Nome do usuário
-            password="teste",      # Senha do usuário
+            password="password",      # Senha do usuário
             host="localhost",         # Host do banco de dados
             port="5432"               # Porta padrão do PostgreSQL
         )
@@ -45,26 +45,33 @@ def inicio(cursor):
         id_player = criar_personagem(cursor)
         return id_player
 
-    escolha = int(input("1. Criar novo personagem\n2. Escolher personagem já criado\nEscolha uma opção: "))
-    while escolha != 1 or escolha != 2:
-        if escolha == 1:
-            id_player = criar_personagem(cursor)
-            return id_player
-        elif escolha == 2:
-            print("\nEscolha um personagem para jogar:")
-            for i, (id_player, nome) in enumerate(personagens, 1):
-                print(f"{i}. {nome} (ID: {id_player})")
-
-            while True:
-                try:
-                    escolha = int(input("\nDigite o número do personagem que deseja jogar: "))
-                    if 1 <= escolha <= len(personagens):
-                        return personagens[escolha - 1][0]  # Retorna o ID do personagem escolhido
-                    else:
-                        print("Escolha inválida. Tente novamente.")
-                except ValueError:
-                    print("Entrada inválida. Digite um número válido.")
+    while True:
+        try:
+            escolha = int(input("1. Criar novo personagem\n2. Escolher personagem já criado\nEscolha uma opção: "))
+            if escolha in [1, 2]:
+                break  # Sai do loop se a escolha for válida
+            print("Opção inválida. Escolha 1 ou 2.")
+        except ValueError:
+            print("Entrada inválida. Digite um número válido.")
     
+    if escolha == 1:
+        id_player = criar_personagem(cursor)
+        return id_player
+    elif escolha == 2:
+        print("\nEscolha um personagem para jogar:")
+        for i, (id_player, nome) in enumerate(personagens, 1):
+            print(f"{i}. {nome} (ID: {id_player})")
+
+        while True:
+            try:
+                escolha = int(input("\nDigite o número do personagem que deseja jogar: "))
+                if 1 <= escolha <= len(personagens):
+                    return personagens[escolha - 1][0]  # Retorna o ID do personagem escolhido
+                else:
+                    print("Escolha inválida. Tente novamente.")
+            except ValueError:
+                print("Entrada inválida. Digite um número válido.")
+
 
 def criar_personagem(cursor):
     nome = input("\nDigite o nome do seu personagem: ")
@@ -144,7 +151,7 @@ def criar_personagem(cursor):
     print(f"Parabéns! Seu personagem {nome} foi criado como um {classe_escolhida} e salvo no banco de dados.")
     print("\nAgora, você está pronto para começar sua jornada!")
     print("A jornada está apenas começando. Você está em um local seguro, mas as opções à frente são muitas.")
-    print("\nVocê se encontra na tranquila cidade de Majulam, você está na praça principal da cidade, ao norte encontra-se o poço, à leste o mercado e a sul a floresta.")
+    print("\nVocê se encontra na tranquila cidade de Majula, você está na praça principal da cidade, ao norte encontra-se o poço, à leste o mercado e a sul a floresta.")
     print("Aqui, você pode escolher para onde deseja ir. Você pode se mover para as seguintes direções:")
     return id_player  # Retorna o ID do personagem criado
 
