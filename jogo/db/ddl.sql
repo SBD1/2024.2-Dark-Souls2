@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS Personagem (
 CREATE TABLE IF NOT EXISTS NPC (
     idNpc SERIAL PRIMARY KEY,
     tipoNpc VARCHAR(20) NOT NULL,
+    salaAtual INT,
     idCharacter INT REFERENCES Personagem(idCharacter)
 );
 

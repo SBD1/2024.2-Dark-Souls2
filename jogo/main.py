@@ -7,7 +7,7 @@ def conectar_banco():
         conn = psycopg2.connect(
             dbname="dark_souls_mud",  # Nome do banco de dados
             user="postgres",          # Nome do usuário
-            password="password",      # Senha do usuário
+            password="teste",      # Senha do usuário
             host="localhost",         # Host do banco de dados
             port="5432"               # Porta padrão do PostgreSQL
         )
@@ -236,9 +236,37 @@ def movePlayer(cursor, sala_atual_id):
         else:
             print("\nOpção inválida. Escolha novamente.")
 
+def verificaNpc(cursor, sala_atual):
+    query = """
+    SELECT s.id, s.nome, s.descricao, p.nome, n.tiponpc
+    FROM Npc n
+    JOIN Sala s ON n.salaAtual = s.id
+    JOIN Personagem p ON n.idNpc = p.idCharacter
+    WHERE s.id = %s;
+    """
+    cursor.execute(query, (sala_atual,))
+    resultado = cursor.fetchone()
+    if resultado:
+        id_sala, nome_sala, descricao_sala, nome_npc, tipo_npc = resultado
+        return {"id": id_sala, "nome": nome_sala, "descricao": descricao_sala, "nomeNpc": nome_npc, "tipoNpc": tipo_npc}
+    else:
+        print("Não há NPC nessa sala.")
+        return None
+    
+def combate():
+    print("Em construção")
 
+def combateBoss():
+    print("Em construção")
+
+def comprarEquipamento():
+    print("Em construção")
+
+def aprimorarEquipamento():
+    print("Em construção")
 
 def menu(cursor, idPlayer):
+    
     while True:
         # Buscar informações da sala atual
         sala_atual = buscar_detalhes_sala(cursor, idPlayer)
@@ -258,7 +286,22 @@ def menu(cursor, idPlayer):
         escolha = input("\nEscolha uma opção: ")
 
         if escolha == "1":
-            print("\nVocê olha ao redor, mas por enquanto não há nada interessante por aqui.")
+            npc = verificaNpc(cursor, sala_atual["id"])
+            print("\n====================================================================")
+            print(f"Você se encontra em: {sala_atual['nome']}")
+            print(f"Descrição: {sala_atual['descricao']}")
+            print(f"A sala tem o seguinte {npc['tipoNpc']} de nome {npc['nomeNpc']}")
+            if npc['tipoNpc']  == 'Inimigo':
+                combate()
+            elif npc['tipoNpc']  == 'Mercante':
+                comprarEquipamento()
+            elif npc['tipoNpc']  == 'Ferreiro':
+                aprimorarEquipamento()
+            elif npc['tipoNpc']  == 'Boss':
+                combateBoss()
+            else:
+                print("Você olhou ao redor e não encontrou nada interessante neste local")
+            print("====================================================================")
         
         elif escolha == "2":
             movePlayer(cursor, sala_atual["id"])

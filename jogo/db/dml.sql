@@ -15,17 +15,17 @@ VALUES
 ('NPC', 'Emerald Herald'), -- Mercante
 ('NPC', 'Blacksmith Lenigrast'), -- Ferreiro
 ('NPC', 'Straid of Olaphis'), -- Mercante
-('NPC', 'Hollow Soldier'), -- Inimigo
+('NPC', 'Black Wolf'), -- Inimigo
 ('NPC', 'The Last Giant'); -- Boss
 
 -- Associando Personagens à tabela NPC
-INSERT INTO NPC (tipoNpc, idCharacter)
+INSERT INTO NPC (tipoNpc, idCharacter, salaAtual)
 VALUES
-('Mercante', 1), -- Emerald Herald
-('Ferreiro', 2), -- Blacksmith Lenigrast
-('Mercante', 3), -- Straid of Olaphis
-('Inimigo', 4), -- Hollow Soldier
-('Boss', 5); -- The Last Giant
+('Mercante', 1, 1), -- Emerald Herald
+('Ferreiro', 2, 3), -- Blacksmith Lenigrast
+('Mercante', 3, 3), -- Straid of Olaphis
+('Inimigo', 4, 4), -- Black Wolf
+('Boss', 5, 8); -- The Last Giant
 
 -- Inserindo detalhes em subtipos de NPC
 -- Mercante
@@ -38,7 +38,7 @@ INSERT INTO Ferreiro (idNpc) VALUES (2); -- Blacksmith Lenigrast
 -- Inimigo
 INSERT INTO Inimigo (hp, dano, idNpc)
 VALUES
-(300, 30, 4); -- Hollow Soldier
+(300, 30, 4); -- Black wolf
 
 -- Boss
 INSERT INTO Boss (hp, dano, idNpc)
