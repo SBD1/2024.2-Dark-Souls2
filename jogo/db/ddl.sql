@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS Player (
     endurance INT NOT NULL,
     intelligence INT NOT NULL,
     idSalaAtual INT NOT NULL,
+    coin INT,
     idCharacter INT REFERENCES Personagem(idCharacter),
     idClasse INT REFERENCES Classe(idClasse)
 );
@@ -159,11 +160,11 @@ CREATE TABLE sala (
 
 -- Inventário
 CREATE TABLE IF NOT EXISTS Inventario (
-    characterId INT REFERENCES Personagem(idCharacter),
+    playerId INT REFERENCES Player(idPlayer),
     slot INT NOT NULL,
     item INT REFERENCES InstanciaItem(nroInstancia),
     itemQtd INT NOT NULL,
-    PRIMARY KEY (characterId, slot)
+    PRIMARY KEY (playerId, slot)
 );
 
 -- Relacionamentos adicionais

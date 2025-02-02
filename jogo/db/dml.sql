@@ -22,7 +22,7 @@ VALUES
 INSERT INTO NPC (tipoNpc, idCharacter, salaAtual)
 VALUES
 ('Mercante', 1, 1), -- Emerald Herald
-('Ferreiro', 2, 3), -- Blacksmith Lenigrast
+('Ferreiro', 2, 2), -- Blacksmith Lenigrast
 ('Mercante', 3, 3), -- Straid of Olaphis
 ('Inimigo', 4, 4), -- Black Wolf
 ('Boss', 5, 8); -- The Last Giant
@@ -38,7 +38,7 @@ INSERT INTO Ferreiro (idNpc) VALUES (2); -- Blacksmith Lenigrast
 -- Inimigo
 INSERT INTO Inimigo (hp, dano, idNpc)
 VALUES
-(300, 30, 4); -- Black wolf
+(50, 30, 4); -- Black wolf
 
 -- Boss
 INSERT INTO Boss (hp, dano, idNpc)
@@ -49,10 +49,10 @@ VALUES
 INSERT INTO Item (nomeItem, tipoItem, itemDetalhes, preco)
 VALUES
 ('Estus Flask', 'Consumível', 'Frasco que restaura HP ao ser consumido', 0), -- Consumível
-('Claymore', 'Equipável', 'Espada longa com alto alcance e versatilidade', 1500), -- Arma
-('Drangleic Shield', 'Equipável', 'Escudo resistente com alta defesa física', 2000), -- Armadura
+('Claymore', 'Equipável', 'Espada longa com alto alcance e versatilidade', 500), -- Arma
+('Drangleic Shield', 'Equipável', 'Escudo resistente com alta defesa física', 500), -- Armadura
 ('Green Blossom', 'Consumível', 'Aumenta temporariamente a regeneração de stamina', 300), -- Consumível
-('Elite Knight Armor', 'Equipável', 'Conjunto de armadura robusto com boa resistência', 5000); -- Armadura
+('Elite Knight Armor', 'Equipável', 'Conjunto de armadura robusto com boa resistência', 1000); -- Armadura
 
 -- Associando itens à tabela Equipavel
 INSERT INTO Equipavel (tipoEquipavel, idItem)
@@ -125,7 +125,7 @@ INSERT INTO sala (nome, descricao, regiao_id) VALUES
 
 -- Majula
 UPDATE sala SET norte = 2, sul = 4, leste = 3, oeste = NULL WHERE id = 1; -- Praça Principal
-UPDATE sala SET norte = NULL, sul = 1, leste = NULL, oeste = NULL WHERE id = 2; -- Poço
+UPDATE sala SET norte = NULL, sul = 1, leste = NULL, oeste = NULL WHERE id = 2; -- Lago
 UPDATE sala SET norte = NULL, sul = NULL, leste = NULL, oeste = 1 WHERE id = 3; -- Mercado
 
 -- Forest of Fallen Giants
@@ -153,3 +153,14 @@ UPDATE sala SET norte = 17, sul = 19, leste = NULL, oeste = NULL WHERE id = 18; 
 UPDATE sala SET norte = 18, sul = 20, leste = NULL, oeste = NULL WHERE id = 19; -- Biblioteca
 UPDATE sala SET norte = 19, sul = 21, leste = NULL, oeste = NULL WHERE id = 20; -- Sala do Guarda Real
 UPDATE sala SET norte = 20, sul = NULL, leste = NULL, oeste = NULL WHERE id = 21; -- Masmorras
+
+INSERT INTO InstanciaItem (idItem) VALUES (1), (2), (3), (4), (5);
+
+-- Associando os itens vendidos por cada mercante
+INSERT INTO Mercante_Vende (idMercante, nroInstancia) 
+VALUES
+(1, 1),
+(1, 4), 
+(2, 2), 
+(2, 3), 
+(2, 5);
