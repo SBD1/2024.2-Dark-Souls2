@@ -2,6 +2,8 @@
 
 Este projeto é um MUD (Jogo de Aventura Baseado em Texto) inspirado no universo de **Dark Souls 2**. O jogo é um RPG onde o jogador cria um personagem, escolhe uma classe e explora diferentes locais, enfrentando desafios ao longo do caminho.
 
+## PASSO A PASSO FEITO NO COMEÇO DO VÍDEO DA ENTREGA 3 CASO HAJA ALGUMA DÚVIDA
+
 ## Requisitos
 
 Antes de rodar o jogo, certifique-se de ter os seguintes requisitos instalados:
@@ -9,6 +11,7 @@ Antes de rodar o jogo, certifique-se de ter os seguintes requisitos instalados:
 - **Python 3.7+**
 - **PostgreSQL** (ou qualquer outro banco de dados SQL que preferir)
 - **psycopg2** (biblioteca para conectar o Python ao PostgreSQL)
+- **random** (biblioteca python)
 
 ### Instalar dependências
 
@@ -24,7 +27,7 @@ Antes de rodar o jogo, certifique-se de ter os seguintes requisitos instalados:
 1. ### Configurar o banco de dados
   - Criação do banco de dados:
 
-  Abra o terminal do PostgreSQL e execute o seguinte comando para criar o banco de dados:
+  Abra o terminal do PostgreSQL (psql) e execute o seguinte comando para criar o banco de dados:
 
       
       CREATE DATABASE dark_souls_mud;
@@ -34,13 +37,12 @@ Antes de rodar o jogo, certifique-se de ter os seguintes requisitos instalados:
       
       \c dark_souls_mud;
 
-  Mesmo não tendo sido utilizado ainda no python é importante ja criarmos e popularmos as nossas tabelas:
     
-  Podendo ser feito manualmente copiando e colando o conteúdo do ddl e dml no terminal do PostgreSQL.
+   Após conectar-se com o banco copie e cole manualmente no (psql) o conteúdo do ddl e dml no terminal do PostgreSQL, se tudo foi feito certinho até aqui o seu banco está criado e populado da maneira correta.
 
   - **Configuração da Conexão no Código:**
 
-  No arquivo `main.py`, altere os seguintes parâmetros para que a conexão com o banco de dados funcione corretamente:
+  No arquivo `main.py`, altere os parâmetros necessários, no meu por exemplo, só foi necessário alterar a password, para que a conexão com o banco de dados funcione corretamente:
 
     conn = psycopg2.connect(
         dbname="dark_souls_mud",  # Nome do banco de dados
@@ -52,6 +54,4 @@ Antes de rodar o jogo, certifique-se de ter os seguintes requisitos instalados:
 
 2. ### Rodar o jogo
 
-  - Depois de configurar o banco de dados e a conexão, você pode rodar o jogo executando o seguinte comando:
-
-      python main.py
+  - Depois de configurar o banco de dados e a conexão, você pode executar seu arquivo python e o jogo funcionará.
