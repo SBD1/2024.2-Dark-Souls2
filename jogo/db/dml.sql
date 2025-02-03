@@ -38,12 +38,12 @@ INSERT INTO Ferreiro (idNpc) VALUES (2); -- Blacksmith Lenigrast
 -- Inimigo
 INSERT INTO Inimigo (hp, dano, idNpc)
 VALUES
-(50, 30, 4); -- Black wolf
+(50, 5, 4); -- Black wolf
 
 -- Boss
 INSERT INTO Boss (hp, dano, idNpc)
 VALUES
-(3200, 150, 5); -- The Pursuer
+(1500, 30, 5); -- The Pursuer
 
 -- Inserindo itens na tabela Item
 INSERT INTO Item (nomeItem, tipoItem, itemDetalhes, preco)

@@ -154,7 +154,6 @@ def criar_personagem(cursor):
     print("\nAgora, você está pronto para começar sua jornada!")
     print("A jornada está apenas começando. Você está em um local seguro, mas as opções à frente são muitas.")
     print("\nVocê se encontra na tranquila cidade de Majula, você está na praça principal da cidade, ao norte encontra-se o poço, à leste o mercado e a sul a floresta.")
-    print("Aqui, você pode escolher para onde deseja ir. Você pode se mover para as seguintes direções:")
     return id_player  # Retorna o ID do personagem criado
 
 
@@ -253,6 +252,7 @@ def verificaNpc(cursor, sala_atual):
     else:
         print("Não há NPC nessa sala.")
         return None
+
 def calcular_dano(base_dano, strength, dexterity):
     """Calcula o dano final baseado em força, destreza e chance de crítico"""
     crit_chance = min(25, strength * 0.5)  # Chance de crítico baseada na força (máx 25%)
@@ -263,6 +263,78 @@ def tentativa_esquiva(dexterity):
     """Calcula se o Player consegue esquivar do ataque do inimigo"""
     dodge_chance = min(30, dexterity * 0.8)  # Chance máxima de esquiva: 30%
     return random.randint(1, 100) <= dodge_chance 
+
+def escolher_arma(cursor, idPlayer):
+    """Permite ao jogador escolher uma arma do inventário"""
+    query = """
+        SELECT i.nomeItem, a.dano, inv.item
+        FROM Inventario inv
+        JOIN InstanciaItem inst ON inv.item = inst.nroInstancia
+        JOIN Item i ON inst.idItem = i.idItem
+        JOIN Equipavel e ON i.idItem = e.idItem
+        JOIN Arma a ON e.idEquipavel = a.idEquipavel
+        WHERE inv.playerId = %s;
+    """
+    cursor.execute(query, (idPlayer,))
+    armas = cursor.fetchall()
+    
+    if not armas:
+        print("⚔️ Você não tem nenhuma arma, usando a espada inicial (30 de dano base).")
+        return "Espada Inicial", 30
+    
+    print("\n🔪 Escolha sua arma:")
+    for idx, (nome, dano, _) in enumerate(armas, 1):
+        print(f"{idx}. {nome} (Dano: {dano})")
+    
+    while True:
+        escolha = input("Digite o número da arma para usar: ").strip()
+        try:
+            escolha = int(escolha)
+            if 1 <= escolha <= len(armas):
+                return armas[escolha - 1][0], armas[escolha - 1][1]
+            print("Escolha inválida.")
+        except ValueError:
+            print("Entrada inválida. Digite um número válido.")
+
+def usar_consumivel(cursor, idPlayer):
+    """Permite ao jogador usar um consumível durante o combate"""
+    query = """
+        SELECT i.nomeItem, c.efeito, inv.item
+        FROM Inventario inv
+        JOIN InstanciaItem inst ON inv.item = inst.nroInstancia
+        JOIN Item i ON inst.idItem = i.idItem
+        JOIN Consumivel c ON i.idItem = c.idItem
+        WHERE inv.playerId = %s;
+    """
+    cursor.execute(query, (idPlayer,))
+    consumiveis = cursor.fetchall()
+    
+    if not consumiveis:
+        print("🚫 Você não tem consumíveis para usar.")
+        return
+    
+    print("\n🧪 Escolha um consumível para usar:")
+    for idx, (nome, efeito, _) in enumerate(consumiveis, 1):
+        print(f"{idx}. {nome} (Efeito: {efeito})")
+    
+    while True:
+        escolha = input("Digite o número do consumível para usar ou 's' para cancelar: ").strip()
+        if escolha.lower() == 's':
+            return
+        try:
+            escolha = int(escolha)
+            if 1 <= escolha <= len(consumiveis):
+                nome, efeito, idInstancia = consumiveis[escolha - 1]
+                print(f"Você usou {nome} e recebeu o efeito: {efeito}!")
+                cursor.execute("""
+                    DELETE FROM Inventario 
+                    WHERE playerId = %s AND item = %s;
+                """, (idPlayer, idInstancia))
+                cursor.connection.commit()
+                return
+            print("Escolha inválida.")
+        except ValueError:
+            print("Entrada inválida. Digite um número válido.")
 
 def combate(cursor, idPlayer, idNpc):
     """Mecânica de combate entre Player e Inimigo"""
@@ -279,69 +351,66 @@ def combate(cursor, idPlayer, idNpc):
 
     # Buscar status do Inimigo
     query = """
-    SELECT i.hp, i.dano 
+    SELECT i.hp, i.dano, p.nome
     FROM Inimigo i
     JOIN NPC n ON i.idNpc = n.idNpc
+    JOIN Personagem p ON n.idCharacter = p.idCharacter
     WHERE n.idNpc = %s;
     """
     cursor.execute(query, (idNpc,))
     inimigo_data = cursor.fetchone()
+    
     if not inimigo_data:
         print("Erro ao recuperar dados do Inimigo.")
         return
-    hpInimigo, danoInimigo = inimigo_data
+    hpInimigo, danoInimigo, nomeNpc = inimigo_data
 
-    print(f"\n⚔️ Você entrou em combate! HP: {hpPlayer} vs Inimigo HP: {hpInimigo}")
+    arma, danoBase = escolher_arma(cursor, idPlayer)
+    print(f"\n⚔️ Você entrou em combate com {nomeNpc}! HP: {hpPlayer} vs Inimigo HP: {hpInimigo}")
 
     while hpPlayer > 0 and hpInimigo > 0:
         print("\n📜 Escolha sua ação:")
         print("1. Atacar 🗡️")
         print("2. Esquivar 🔄")
         print("3. Fugir 🏃")
+        print("4. Usar Consumível 🧪")
 
-        while True:
-            escolha = input("\nDigite sua ação: ").strip()
-            if escolha in ["1", "2", "3"]:
-                break
-            print("❌ Opção inválida. Escolha 1, 2 ou 3.")
+        escolha = input("\nDigite sua ação: ").strip()
 
         if escolha == "1":
-            # Player ataca
-            danoPlayer = calcular_dano(10, strength, dexterity)  # 10 é um dano base
+            danoPlayer = calcular_dano(danoBase, strength, dexterity)
             hpInimigo -= danoPlayer
-            print(f"\n💥 Você atacou e causou {danoPlayer} de dano!")
-
+            print(f"\n💥 Você atacou com {arma} e causou {danoPlayer} de dano!")
         elif escolha == "2":
-            # Tentativa de esquiva
             if tentativa_esquiva(dexterity):
                 print("\n✨ Você conseguiu esquivar do ataque!")
-                continue  # Volta para o próximo turno sem sofrer dano
+                continue
             else:
                 print("\n❌ Você falhou ao esquivar!")
-
         elif escolha == "3":
             print("\n🏃 Você fugiu do combate!")
-            return False  # Retorna False indicando que o Player fugiu
+            return True
+        elif escolha == "4":
+            usar_consumivel(cursor, idPlayer)
+        else:
+            print("❌ Opção inválida.")
+            continue
 
-        # Se o inimigo ainda estiver vivo, ele ataca
         if hpInimigo > 0:
             hpPlayer -= danoInimigo
             print(f"💀 O inimigo atacou e causou {danoInimigo} de dano!")
 
-        # Exibir status atual
         print(f"\n🔥 HP Atual: Você {hpPlayer} | Inimigo {hpInimigo}")
 
-    # Determinar o resultado do combate
     if hpPlayer > 0:
-        print("\n🎉 Você venceu a batalha!")
-        # Atualizar HP do Player no banco
-        query = "UPDATE Player SET hpAtual = %s WHERE idPlayer = %s;"
-        cursor.execute(query, (hpPlayer, idPlayer))
-        conn.commit()
-        return True  # Retorna True se o Player venceu
+        print(f"\n🎉 Você venceu a batalha! O {nomeNpc} dropou 50 de gold.")
+        cursor.execute("UPDATE Player SET hpAtual = %s, coin = coin + 50 WHERE idPlayer = %s;", (hpPlayer, idPlayer))
+        cursor.connection.commit()
+        return True
 
     print("\n☠️ Você foi derrotado...")
-    return False  # Retorna False se o Player perdeu
+    return False
+
 
 def combateBoss():
     print("Em construção")
@@ -428,7 +497,7 @@ def comprarEquipamento(cursor, idPlayer, idNpc):
         except ValueError:
             print("\nEntrada inválida. Digite um número válido.")
 
-def aprimorarEquipamento():
+def aprimorarEquipamento(cursor, idPlayer):
     print("Em construção")
 
 def obterStatusPlayer(cursor, idPlayer):
@@ -436,7 +505,7 @@ def obterStatusPlayer(cursor, idPlayer):
     
     query = """
     SELECT p.nome, pl.hpAtual, pl.health, pl.strength, pl.dexterity, pl.vigor, 
-           pl.faith, pl.endurance, pl.intelligence, c.nome AS classe
+           pl.faith, pl.endurance, pl.intelligence, c.nome AS classe, pl.coin
     FROM Player pl
     JOIN Personagem p ON pl.idCharacter = p.idCharacter
     JOIN Classe c ON pl.idClasse = c.idClasse
@@ -451,7 +520,7 @@ def obterStatusPlayer(cursor, idPlayer):
         return None
 
     # Desempacotando os valores
-    nome, hpAtual, health, strength, dexterity, vigor, faith, endurance, intelligence, classe = player_data
+    nome, hpAtual, health, strength, dexterity, vigor, faith, endurance, intelligence, classe, coin = player_data
 
     # Criando um dicionário para retornar os status
     status = {
@@ -463,13 +532,77 @@ def obterStatusPlayer(cursor, idPlayer):
         "Vigor": vigor,
         "Fé": faith,
         "Endurance": endurance,
-        "Inteligência": intelligence
+        "Inteligência": intelligence,
+        "Coin": coin
     }
 
     return status
 
 def mostrarInventario(cursor, idPlayer):
-    print("Em construção")
+    # Obter os itens do inventário do jogador
+    query = """
+        SELECT i.nomeItem, i.tipoItem, inv.itemQtd, c.efeito, c.duracao, c.descricao, inv.item
+        FROM Inventario inv
+        JOIN InstanciaItem inst ON inv.item = inst.nroInstancia
+        JOIN Item i ON inst.idItem = i.idItem
+        LEFT JOIN Consumivel c ON i.idItem = c.idItem
+        WHERE inv.playerId = %s;
+    """
+    cursor.execute(query, (idPlayer,))
+    itens = cursor.fetchall()
+
+    if not itens:
+        print("Seu inventário está vazio.")
+        return
+
+    print("\nSeu Inventário:")
+    for idx, (nome, tipo, qtd, efeito, duracao, descricao, idInstancia) in enumerate(itens, 1):
+        info_extra = f" - {descricao} (Efeito: {efeito}, Duração: {duracao}s)" if efeito else ""
+        print(f"{idx}. {nome} ({tipo}) x{qtd}{info_extra}")
+    
+    # Permitir usar consumíveis
+    while True:
+        escolha = input("\nDigite o número do item para usar (ou 'sair' para fechar o inventário): ")
+        if escolha.lower() == "sair":
+            break
+        try:
+            escolha = int(escolha)
+            if 1 <= escolha <= len(itens):
+                nome, tipo, qtd, efeito, duracao, descricao, idInstancia = itens[escolha - 1]
+                if efeito:
+                    usarConsumivel(cursor, idPlayer, idInstancia, nome, efeito)
+                    break
+                else:
+                    print("Este item não pode ser usado.")
+            else:
+                print("Escolha inválida.")
+        except ValueError:
+            print("Entrada inválida. Digite um número válido.")
+
+def usarConsumivel(cursor, idPlayer, idInstancia, nome, efeito):
+    # Aplica o efeito do consumível
+    if "HP" in efeito:
+        query = "UPDATE Player SET hpAtual = LEAST(health, hpAtual + 50) WHERE idPlayer = %s;"
+        cursor.execute(query, (idPlayer,))
+        print(f"Você usou {nome} e recuperou HP!")
+    elif "stamina" in efeito:
+        print(f"Você usou {nome} e sua regeneração de stamina aumentou!")
+    
+    # Reduz a quantidade do item no inventário
+    query = """
+        UPDATE Inventario SET itemQtd = itemQtd - 1
+        WHERE playerId = %s AND item = %s AND itemQtd > 0;
+    """
+    cursor.execute(query, (idPlayer, idInstancia))
+    
+    # Remover o item do inventário se a quantidade for 0
+    query = """
+        DELETE FROM Inventario WHERE playerId = %s AND item = %s AND itemQtd <= 0;
+    """
+    cursor.execute(query, (idPlayer, idInstancia))
+    
+    cursor.connection.commit()
+
 
 def menu(cursor, idPlayer):
     
