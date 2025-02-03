@@ -209,3 +209,15 @@ CREATE TABLE IF NOT EXISTS Player_NPC_Interacao (
     interagiu BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (idPlayer, idNpc)
 );
+
+CREATE OR REPLACE PROCEDURE descansar_em_bonfire(id_player INT, sala_atual INT) AS $$
+BEGIN
+    IF sala_atual = 1 THEN
+        -- Restaura o HP do jogador
+        UPDATE Player SET hpAtual = health WHERE idPlayer = id_player;
+        RAISE NOTICE 'Você descansou na bonfire e recuperou todo o HP!';
+    ELSE
+        RAISE EXCEPTION 'Voce so pode descansar na bonfire na sala principal!';
+    END IF;
+END;
+$$ LANGUAGE plpgsql;

@@ -8,7 +8,7 @@ def conectar_banco():
         conn = psycopg2.connect(
             dbname="dark_souls_mud",  # Nome do banco de dados
             user="postgres",          # Nome do usuário
-            password="password",      # Senha do usuário
+            password="teste",      # Senha do usuário
             host="localhost",         # Host do banco de dados
             port="5432"               # Porta padrão do PostgreSQL
         )
@@ -255,13 +255,13 @@ def verificaNpc(cursor, sala_atual):
 
 def calcular_dano(base_dano, strength, dexterity):
     """Calcula o dano final baseado em força, destreza e chance de crítico"""
-    crit_chance = min(25, strength * 0.5)  # Chance de crítico baseada na força (máx 25%)
+    crit_chance = min(25, strength * 1)  # Chance de crítico baseada na força (máx 25%)
     crit_multiplier = 1.5 if random.randint(1, 100) <= crit_chance else 1  # Crítico aumenta 50%
     return int(base_dano * crit_multiplier + dexterity * 0.2)  # Destreza dá leve aumento no dano
 
 def tentativa_esquiva(dexterity):
     """Calcula se o Player consegue esquivar do ataque do inimigo"""
-    dodge_chance = min(30, dexterity * 0.8)  # Chance máxima de esquiva: 30%
+    dodge_chance = min(50, dexterity * 3)  # Chance máxima de esquiva: 30%
     return random.randint(1, 100) <= dodge_chance 
 
 def escolher_arma(cursor, idPlayer):
@@ -389,6 +389,8 @@ def combate(cursor, idPlayer, idNpc):
                 print("\n❌ Você falhou ao esquivar!")
         elif escolha == "3":
             print("\n🏃 Você fugiu do combate!")
+            cursor.execute("UPDATE Player SET hpAtual = %s, coin = coin + 50 WHERE idPlayer = %s;", (hpPlayer, idPlayer))
+            cursor.connection.commit()
             return True
         elif escolha == "4":
             usar_consumivel(cursor, idPlayer)
@@ -397,10 +399,9 @@ def combate(cursor, idPlayer, idNpc):
             continue
 
         if hpInimigo > 0:
-            danoInimigo -= endurance
             if danoInimigo < 0:
                 danoInimigo = 0
-            hpPlayer -= danoInimigo  
+            hpPlayer = hpPlayer - (danoInimigo - endurance)
             print(f"💀 O inimigo atacou e causou {danoInimigo} de dano!")
 
         print(f"\n🔥 HP Atual: Você {hpPlayer} | Inimigo {hpInimigo}")
@@ -417,8 +418,86 @@ def combate(cursor, idPlayer, idNpc):
     return False
 
 
-def combateBoss():
-    print("Em construção")
+def combateBoss(cursor, idPlayer, idBoss):
+    """Mecânica de combate entre Player e Boss"""
+    # Buscar status do Player
+    query = """
+    SELECT hpAtual, strength, dexterity, endurance FROM Player WHERE idPlayer = %s;
+    """
+    cursor.execute(query, (idPlayer,))
+    player_data = cursor.fetchone()
+    if not player_data:
+        print("Erro ao recuperar dados do Player.")
+        return
+    hpPlayer, strength, dexterity, endurance = player_data
+
+    # Buscar status do Boss
+    query = """
+    SELECT b.hp, b.dano, p.nome
+    FROM Boss b
+    JOIN NPC n ON b.idNpc = n.idNpc
+    JOIN Personagem p ON n.idCharacter = p.idCharacter
+    WHERE n.idNpc = %s;
+    """
+    cursor.execute(query, (idBoss,))
+    boss_data = cursor.fetchone()
+    
+    if not boss_data:
+        print("Erro ao recuperar dados do Boss.")
+        return
+    hpBoss, danoBoss, nomeBoss = boss_data
+
+    arma, danoBase = escolher_arma(cursor, idPlayer)
+    print(f"\n🔥 Você entrou em combate com o BOSS {nomeBoss}! HP: {hpPlayer} vs Boss HP: {hpBoss}")
+
+    while hpPlayer > 0 and hpBoss > 0:
+        print("\n📜 Escolha sua ação:")
+        print("1. Atacar 🗡️")
+        print("2. Esquivar 🔄")
+        print("3. Fugir 🏃")
+        print("4. Usar Consumível 🧪")
+
+        escolha = input("\nDigite sua ação: ").strip()
+
+        if escolha == "1":
+            danoPlayer = calcular_dano(danoBase, strength, dexterity)
+            hpBoss -= max(1, danoPlayer - 5)  # Boss tem resistência fixa de 5 ao dano
+            print(f"\n💥 Você atacou com {arma} e causou {danoPlayer} de dano reduzido para {max(1, danoPlayer - 5)}!")
+        elif escolha == "2":
+            if tentativa_esquiva(dexterity):
+                print("\n✨ Você conseguiu esquivar do ataque do Boss!")
+                continue
+            else:
+                print("\n❌ Você falhou ao esquivar!")
+        elif escolha == "3":
+            print("\n🏃 Você tentou fugir, mas chefes não permitem fuga!")
+            continue
+        elif escolha == "4":
+            usar_consumivel(cursor, idPlayer)
+        else:
+            print("❌ Opção inválida.")
+            continue
+
+        # Ataque do Boss
+        if hpBoss > 0:
+            danoFinal = danoBoss
+            if random.random() < 0.2:  # 20% de chance de ataque especial
+                danoFinal *= 1.1
+                print(f"⚡ O Boss {nomeBoss} usou um ataque especial!")
+            hpPlayer = hpPlayer - (danoFinal-endurance)
+            print(f"💀 O Boss atacou e causou {danoFinal} de dano!\nPorém sua armadura reteve {endurance} de dano e o dano final foi de: {danoFinal-endurance}")
+
+        print(f"\n🔥 HP Atual: Você {hpPlayer} | Boss {hpBoss}")
+
+    if hpPlayer > 0:
+        print(f"\n🎉 Você derrotou o BOSS {nomeBoss}! Recebeu 10000 de gold.")
+        cursor.execute("UPDATE Player SET hpAtual = %s, coin = coin + 10000 WHERE idPlayer = %s;", (hpPlayer, idPlayer))
+        cursor.connection.commit()
+        return True
+
+    print("\n☠️ Você foi derrotado pelo BOSS...")
+    return False
+
 
 def comprarEquipamento(cursor, idPlayer, idNpc):
     # Buscar o ID do Mercante associado ao NPC
@@ -789,6 +868,18 @@ def registrar_interacao_npc(cursor, idPlayer, idNpc):
     else:
         print("👀 Você já falou com esse NPC antes.")
 
+def descansar_em_bonfire(cursor, id_player, sala_atual):
+    """Tenta descansar na bonfire, só funciona se o Player estiver na sala principal (id = 1)"""
+    try:
+        cursor.execute("CALL descansar_em_bonfire(%s, %s);", (id_player, sala_atual))
+        cursor.connection.commit()
+        print("🔥 Você descansou na bonfire. HP restaurado!")
+        return True  # Indica sucesso
+    except Exception as e:
+        print(f"❌ Erro: {e}")  # Exibe o erro de forma amigável
+        cursor.connection.rollback()  # Reseta o estado da transação
+        return False  # Indica falha, mas o jogo continua
+
 
 def menu(cursor, idPlayer):
 
@@ -809,7 +900,8 @@ def menu(cursor, idPlayer):
         print("2. Movimentar-se")
         print("3. Verificar status do player")
         print("4. Verificar inventário")
-        print("5. Sair do jogo")
+        print("5. Descansar na fogueira")
+        print("6. Sair do jogo")
 
         escolha = input("\nEscolha uma opção: ")
 
@@ -857,18 +949,40 @@ def menu(cursor, idPlayer):
             elif npc['tipoNpc']  == 'Ferreiro':
                 aprimorarEquipamento(cursor, idPlayer)
             elif npc['tipoNpc']  == 'Boss':
-                combateBoss()
+                while True:
+                    escolha = int(input("1. Entrar em combate\n2. Recusar combate\n: "))
+                    if escolha == 1:
+                        print(f"Você irá entrar em combate com {npc['nomeNpc']}")
+                        resultadoCombate = combateBoss(cursor, idPlayer, npc['idNpc'])
+                        if resultadoCombate == False:
+                            print(f"\nVocê foi derrotado pelo {npc['nomeNpc']}... Sua jornada ainda não acabou!")
+                            print("Você desperta no salão principal, sentindo a derrota, mas pronto para lutar novamente.")
+                            
+                            query = """
+                            UPDATE Player
+                            SET idSalaAtual = 1, hpAtual = health
+                            WHERE idPlayer = %s;
+                            """
+                            cursor.execute(query, (idPlayer,))
+                            conn.commit()
+                        break
+                    if escolha == 2:
+                        print(f"Você escolheu não entrar em combate com {npc['nomeNpc']}")
+                        break
+                    else:
+                        print('Digite um comando válido')
             elif npc['tipoNpc'] == '':
                 if not jogador_ja_falou_com_npc(cursor, idPlayer, 6):
                     print("Seja Bem-Vindo a Majula, tenho uma missão para você!")
                     atualizar_progresso_missao(cursor, idPlayer, 1, incremento=0)
                     registrar_interacao_npc(cursor, idPlayer, 6)
+                    print("Os lobos ficam a sul da Praça Principal!")
                 else:
                     concluida = atualizar_progresso_missao(cursor, idPlayer, 1, incremento=0)
                     if concluida == True:
                         print("Missão ja foi concluida!")
                     else:
-                        print("Olá Andarilho\n Parece que você tem uma missão em progresso!")
+                        print("Olá Andarilho\nParece que você tem uma missão em progresso!")
             else:
                 print("Você olhou ao redor e não encontrou nada interessante neste local")
             print("====================================================================")
@@ -884,8 +998,13 @@ def menu(cursor, idPlayer):
                     print(f"{atributo}: {valor}")
         elif escolha == "4":
             mostrarInventario(cursor, idPlayer)
-            
         elif escolha == "5":
+            sucesso = descansar_em_bonfire(cursor, idPlayer, sala_atual["id"])
+            if not sucesso:
+                # Trate o erro de forma amigável, sem quebrar o jogo
+                print("⚠️ Dica: Só tem fogueira na Praça Principal, onde você inicia o jogo!")
+  
+        elif escolha == "6":
             print("\nVocê decidiu encerrar sua jornada por agora. Até a próxima!")
             break  # Sai do loop e encerra o menu
         
@@ -896,7 +1015,12 @@ def menu(cursor, idPlayer):
 # Executar o jogo
 if __name__ == "__main__":
     conn = conectar_banco()
-    cursor = conn.cursor()
-    idPlayer = inicio(cursor)
-    menu(cursor, idPlayer)
-    
+    if conn:
+        try:
+            cursor = conn.cursor()
+            idPlayer = inicio(cursor)
+            menu(cursor, idPlayer)
+        finally:
+            print("Fechando conexão com o banco de dados.")
+            cursor.close()
+            conn.close()

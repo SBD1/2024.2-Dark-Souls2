@@ -40,12 +40,12 @@ INSERT INTO Ferreiro (idNpc) VALUES (2); -- Blacksmith Lenigrast
 -- Inimigo
 INSERT INTO Inimigo (hp, dano, idNpc)
 VALUES
-(50, 25, 4); -- Black wolf
+(50, 15, 4); -- Black wolf
 
 -- Boss
 INSERT INTO Boss (hp, dano, idNpc)
 VALUES
-(1500, 30, 5); -- The Pursuer
+(1250, 150, 5); -- The Pursuer
 
 -- Inserindo itens na tabela Item
 INSERT INTO Item (nomeItem, tipoItem, itemDetalhes, preco)
@@ -77,7 +77,7 @@ VALUES
 -- Inserindo detalhes na tabela Consumivel
 INSERT INTO Consumivel (efeito, duracao, descricao, idItem)
 VALUES
-('Restaura 50% do HP total', NULL, 'Usado para recuperar saude durante o combate', 1), -- Estus Flask
+('Restaura 50 do HP total', NULL, 'Usado para recuperar saude durante o combate', 1), -- Estus Flask
 ('Aumenta regeneração de stamina', 60, 'Ideal para combates prolongados ou fuga rápida', 4); -- Green Blossom
 
 -- Inserindo regiões na tabela Regiao
@@ -171,4 +171,4 @@ INSERT INTO Missao (nomeMissao, descricao, objetivoTipo, objetivoQuantidade)
 VALUES ('Caçador de Lobos', 'Mate 5 lobos para provar sua força.', 'derrotar', 5);
 
 INSERT INTO Missao_Recompensa (idMissao, coins)
-VALUES (1, 2000);
+VALUES (1, 4000);
