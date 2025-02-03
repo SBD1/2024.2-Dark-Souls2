@@ -179,3 +179,33 @@ CREATE TABLE IF NOT EXISTS Ferreiro_Aprimora (
     nroInstancia INT REFERENCES InstanciaItem(nroInstancia),
     PRIMARY KEY (idFerreiro, nroInstancia)
 );
+
+CREATE TABLE IF NOT EXISTS Missao (
+    idMissao SERIAL PRIMARY KEY,
+    nomeMissao VARCHAR(100) NOT NULL,
+    descricao TEXT NOT NULL,
+    objetivoTipo VARCHAR(50) NOT NULL,  -- 'derrotar', 'coletar', etc.
+    objetivoQuantidade INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ProgressoMissao (
+    idProgresso SERIAL PRIMARY KEY,
+    idPlayer INT REFERENCES Player(idPlayer),
+    idMissao INT REFERENCES Missao(idMissao),
+    progressoAtual INT DEFAULT 0,
+    concluida BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS Missao_Recompensa (
+    idMissao INT REFERENCES Missao(idMissao),
+    coins INT DEFAULT 0,
+    PRIMARY KEY (idMissao)
+);
+
+-- tabela pra verificar se o player ja falou com o npc
+CREATE TABLE IF NOT EXISTS Player_NPC_Interacao (
+    idPlayer INT REFERENCES Player(idPlayer),
+    idNpc INT REFERENCES NPC(idNpc),
+    interagiu BOOLEAN DEFAULT TRUE,
+    PRIMARY KEY (idPlayer, idNpc)
+);

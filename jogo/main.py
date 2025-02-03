@@ -340,14 +340,14 @@ def combate(cursor, idPlayer, idNpc):
     """Mecânica de combate entre Player e Inimigo"""
     # Buscar status do Player
     query = """
-    SELECT hpAtual, strength, dexterity FROM Player WHERE idPlayer = %s;
+    SELECT hpAtual, strength, dexterity, endurance FROM Player WHERE idPlayer = %s;
     """
     cursor.execute(query, (idPlayer,))
     player_data = cursor.fetchone()
     if not player_data:
         print("Erro ao recuperar dados do Player.")
         return
-    hpPlayer, strength, dexterity = player_data
+    hpPlayer, strength, dexterity, endurance = player_data
 
     # Buscar status do Inimigo
     query = """
@@ -397,7 +397,10 @@ def combate(cursor, idPlayer, idNpc):
             continue
 
         if hpInimigo > 0:
-            hpPlayer -= danoInimigo
+            danoInimigo -= endurance
+            if danoInimigo < 0:
+                danoInimigo = 0
+            hpPlayer -= danoInimigo  
             print(f"💀 O inimigo atacou e causou {danoInimigo} de dano!")
 
         print(f"\n🔥 HP Atual: Você {hpPlayer} | Inimigo {hpInimigo}")
@@ -406,6 +409,8 @@ def combate(cursor, idPlayer, idNpc):
         print(f"\n🎉 Você venceu a batalha! O {nomeNpc} dropou 50 de gold.")
         cursor.execute("UPDATE Player SET hpAtual = %s, coin = coin + 50 WHERE idPlayer = %s;", (hpPlayer, idPlayer))
         cursor.connection.commit()
+        if idNpc == 4:
+            atualizar_progresso_missao(cursor, idPlayer, 1, incremento=1)
         return True
 
     print("\n☠️ Você foi derrotado...")
@@ -498,7 +503,77 @@ def comprarEquipamento(cursor, idPlayer, idNpc):
             print("\nEntrada inválida. Digite um número válido.")
 
 def aprimorarEquipamento(cursor, idPlayer):
-    print("Em construção")
+    """Permite ao jogador aprimorar sua arma se tiver moedas suficientes"""
+    query = """
+        SELECT i.nomeItem, a.dano, inv.item, p.coin
+        FROM Inventario inv
+        JOIN InstanciaItem inst ON inv.item = inst.nroInstancia
+        JOIN Item i ON inst.idItem = i.idItem
+        JOIN Equipavel e ON i.idItem = e.idItem
+        JOIN Arma a ON e.idEquipavel = a.idEquipavel
+        JOIN Player p ON inv.playerId = p.idPlayer
+        WHERE inv.playerId = %s;
+    """
+    cursor.execute(query, (idPlayer,))
+    armas = cursor.fetchall()
+    
+    if not armas:
+        print("⚔️ Você não tem nenhuma arma para aprimorar.")
+        return
+    
+    print("\n🛠️ Escolha uma arma para aprimorar:")
+    for idx, (nome, dano, _, coin) in enumerate(armas, 1):
+        print(f"{idx}. {nome} (Dano atual: {dano})")
+    
+    while True:
+        escolha = input("Digite o número da arma para aprimorar ou 's' para cancelar: ").strip()
+        if escolha.lower() == 's':
+            return
+        try:
+            escolha = int(escolha)
+            if 1 <= escolha <= len(armas):
+                nome, danoAtual, idInstancia, coins = armas[escolha - 1]
+                break
+            print("Escolha inválida.")
+        except ValueError:
+            print("Entrada inválida. Digite um número válido.")
+    
+    print("\n💰 Escolha o nível de aprimoramento:")
+    print("1. +100 dano (Custo: 1000 coins)")
+    print("2. +200 dano (Custo: 2000 coins)")
+    
+    while True:
+        nivel = input("Digite o número do aprimoramento ou 's' para cancelar: ").strip()
+        if nivel.lower() == 's':
+            return
+        if nivel == "1" and coins >= 1000:
+            custo = 1000
+            incremento = 100
+            break
+        elif nivel == "2" and coins >= 2000:
+            custo = 2000
+            incremento = 200
+            break
+        elif nivel in ["1", "2"]:
+            print("Moedas insuficientes!")
+        else:
+            print("Escolha inválida.")
+    
+    novoDano = danoAtual + incremento
+    
+    cursor.execute("""
+        UPDATE Arma
+        SET dano = %s
+        WHERE idEquipavel = (SELECT e.idEquipavel FROM Equipavel e 
+                             JOIN Item i ON e.idItem = i.idItem
+                             JOIN InstanciaItem inst ON i.idItem = inst.idItem
+                             WHERE inst.nroInstancia = %s);
+    """, (novoDano, idInstancia))
+    
+    cursor.execute("UPDATE Player SET coin = coin - %s WHERE idPlayer = %s;", (custo, idPlayer))
+    cursor.connection.commit()
+    
+    print(f"🎉 {nome} foi aprimorada! Novo dano: {novoDano}.")
 
 def obterStatusPlayer(cursor, idPlayer):
     """Retorna os status do player incluindo nome, classe e atributos principais."""
@@ -541,10 +616,11 @@ def obterStatusPlayer(cursor, idPlayer):
 def mostrarInventario(cursor, idPlayer):
     # Obter os itens do inventário do jogador
     query = """
-        SELECT i.nomeItem, i.tipoItem, inv.itemQtd, c.efeito, c.duracao, c.descricao, inv.item
+        SELECT i.nomeItem, e.tipoEquipavel, inv.itemQtd, c.efeito, c.duracao, c.descricao, inv.item
         FROM Inventario inv
         JOIN InstanciaItem inst ON inv.item = inst.nroInstancia
         JOIN Item i ON inst.idItem = i.idItem
+        LEFT JOIN Equipavel e ON i.idItem = e.idItem
         LEFT JOIN Consumivel c ON i.idItem = c.idItem
         WHERE inv.playerId = %s;
     """
@@ -556,28 +632,52 @@ def mostrarInventario(cursor, idPlayer):
         return
 
     print("\nSeu Inventário:")
-    for idx, (nome, tipo, qtd, efeito, duracao, descricao, idInstancia) in enumerate(itens, 1):
+    for idx, (nome, tipoEquipavel, qtd, efeito, duracao, descricao, idInstancia) in enumerate(itens, 1):
         info_extra = f" - {descricao} (Efeito: {efeito}, Duração: {duracao}s)" if efeito else ""
-        print(f"{idx}. {nome} ({tipo}) x{qtd}{info_extra}")
+        print(f"{idx}. {nome} ({tipoEquipavel}) x{qtd}{info_extra}")
     
-    # Permitir usar consumíveis
+    # Permitir usar consumíveis ou equipar armaduras
     while True:
-        escolha = input("\nDigite o número do item para usar (ou 'sair' para fechar o inventário): ")
+        escolha = input("\nDigite o número do item para usar/equipar (ou 'sair' para fechar o inventário): ")
         if escolha.lower() == "sair":
             break
         try:
             escolha = int(escolha)
             if 1 <= escolha <= len(itens):
-                nome, tipo, qtd, efeito, duracao, descricao, idInstancia = itens[escolha - 1]
+                nome, tipoEquipavel, qtd, efeito, duracao, descricao, idInstancia = itens[escolha - 1]
                 if efeito:
                     usarConsumivel(cursor, idPlayer, idInstancia, nome, efeito)
                     break
+                elif tipoEquipavel == "Armadura":
+                    equiparArmadura(cursor, idPlayer, idInstancia, nome)
+                    break
                 else:
-                    print("Este item não pode ser usado.")
+                    print("Este item não pode ser usado ou equipado.")
             else:
                 print("Escolha inválida.")
         except ValueError:
             print("Entrada inválida. Digite um número válido.")
+
+def equiparArmadura(cursor, idPlayer, idInstancia, nome):
+    """Equipa uma armadura e atualiza a resistência do jogador."""
+    query = """
+        SELECT a.resistencia FROM Armadura a
+        JOIN Equipavel e ON a.idEquipavel = e.idEquipavel
+        JOIN Item i ON e.idItem = i.idItem
+        JOIN InstanciaItem inst ON i.idItem = inst.idItem
+        WHERE inst.nroInstancia = %s;
+    """
+    cursor.execute(query, (idInstancia,))
+    armadura = cursor.fetchone()
+    
+    if not armadura:
+        print("❌ Esta armadura não pode ser equipada.")
+        return
+    
+    resistencia = armadura[0]
+    cursor.execute("UPDATE Player SET endurance = %s WHERE idPlayer = %s;", (resistencia, idPlayer))
+    cursor.connection.commit()
+    print(f"🛡️ Você equipou {nome} e sua resistência aumentou para {resistencia}!")
 
 def usarConsumivel(cursor, idPlayer, idInstancia, nome, efeito):
     # Aplica o efeito do consumível
@@ -604,11 +704,98 @@ def usarConsumivel(cursor, idPlayer, idInstancia, nome, efeito):
     cursor.connection.commit()
 
 
-def menu(cursor, idPlayer):
+def atualizar_progresso_missao(cursor, idPlayer, idMissao, incremento=1):
+    """Atualiza o progresso da missão e concede a recompensa se completada."""
     
+    # Verificar se o jogador já tem a missão ativa
+    cursor.execute("""
+        SELECT progressoAtual, concluida FROM ProgressoMissao
+        WHERE idPlayer = %s AND idMissao = %s;
+    """, (idPlayer, idMissao))
+    
+    progresso = cursor.fetchone()
+    
+    if not progresso:
+        # Se a missão ainda não foi iniciada, cria um progresso para ela
+        cursor.execute("""
+            INSERT INTO ProgressoMissao (idPlayer, idMissao, progressoAtual)
+            VALUES (%s, %s, %s);
+        """, (idPlayer, idMissao, incremento))
+        cursor.connection.commit()
+        print(f"📜 Missão iniciada: Derrote 5 lobos!")
+        return False
+
+    progressoAtual, concluida = progresso
+    
+    if concluida:
+        print("✅ Você já completou essa missão.")
+        return True
+    
+    # Atualizar progresso da missão
+    progressoAtual += incremento
+    cursor.execute("""
+        UPDATE ProgressoMissao
+        SET progressoAtual = %s
+        WHERE idPlayer = %s AND idMissao = %s;
+    """, (progressoAtual, idPlayer, idMissao))
+    
+    # Verificar se a missão foi concluída
+    cursor.execute("SELECT objetivoQuantidade FROM Missao WHERE idMissao = %s;", (idMissao,))
+    objetivoQuantidade = cursor.fetchone()[0]
+    
+    if progressoAtual >= objetivoQuantidade:
+        # Marcar a missão como concluída
+        cursor.execute("""
+            UPDATE ProgressoMissao
+            SET concluida = TRUE
+            WHERE idPlayer = %s AND idMissao = %s;
+        """, (idPlayer, idMissao))
+        
+        # Conceder recompensa
+        cursor.execute("""
+            SELECT coins FROM Missao_Recompensa WHERE idMissao = %s;
+        """, (idMissao,))
+        recompensa = cursor.fetchone()
+        
+        if recompensa:
+            moedas = recompensa[0]
+            cursor.execute("""
+                UPDATE Player SET coin = coin + %s WHERE idPlayer = %s;
+            """, (moedas, idPlayer))
+            print(f"🎉 Missão concluída! Você recebeu {moedas} coins.")
+    
+    cursor.connection.commit()
+
+def jogador_ja_falou_com_npc(cursor, idPlayer, idNpc):
+    """Verifica se o jogador já interagiu com o NPC."""
+    
+    cursor.execute("""
+        SELECT 1 FROM Player_NPC_Interacao 
+        WHERE idPlayer = %s AND idNpc = %s;
+    """, (idPlayer, idNpc))
+    
+    return cursor.fetchone() is not None  # Retorna True se já falou, False caso contrário
+
+def registrar_interacao_npc(cursor, idPlayer, idNpc):
+    """Registra que o jogador falou com o NPC pela primeira vez."""
+    
+    if not jogador_ja_falou_com_npc(cursor, idPlayer, idNpc):
+        cursor.execute("""
+            INSERT INTO Player_NPC_Interacao (idPlayer, idNpc)
+            VALUES (%s, %s);
+        """, (idPlayer, idNpc))
+        cursor.connection.commit()
+        print("📜 Você falou com esse NPC pela primeira vez!")
+    else:
+        print("👀 Você já falou com esse NPC antes.")
+
+
+def menu(cursor, idPlayer):
+
     while True:
         # Buscar informações da sala atual
         sala_atual = buscar_detalhes_sala(cursor, idPlayer)
+        
 
         if sala_atual:
             print("\n====================================================================")
@@ -668,9 +855,20 @@ def menu(cursor, idPlayer):
                     else:
                         print("Comando inválido, tente novamente!")
             elif npc['tipoNpc']  == 'Ferreiro':
-                aprimorarEquipamento()
+                aprimorarEquipamento(cursor, idPlayer)
             elif npc['tipoNpc']  == 'Boss':
                 combateBoss()
+            elif npc['tipoNpc'] == '':
+                if not jogador_ja_falou_com_npc(cursor, idPlayer, 6):
+                    print("Seja Bem-Vindo a Majula, tenho uma missão para você!")
+                    atualizar_progresso_missao(cursor, idPlayer, 1, incremento=0)
+                    registrar_interacao_npc(cursor, idPlayer, 6)
+                else:
+                    concluida = atualizar_progresso_missao(cursor, idPlayer, 1, incremento=0)
+                    if concluida == True:
+                        print("Missão ja foi concluida!")
+                    else:
+                        print("Olá Andarilho\n Parece que você tem uma missão em progresso!")
             else:
                 print("Você olhou ao redor e não encontrou nada interessante neste local")
             print("====================================================================")

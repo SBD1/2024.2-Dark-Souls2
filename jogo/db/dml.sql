@@ -16,16 +16,18 @@ VALUES
 ('NPC', 'Blacksmith Lenigrast'), -- Ferreiro
 ('NPC', 'Straid of Olaphis'), -- Mercante
 ('NPC', 'Black Wolf'), -- Inimigo
-('NPC', 'The Last Giant'); -- Boss
+('NPC', 'The Last Giant'), -- Boss
+('NPC', 'Joseph Lewis'); -- NPC de missão
 
 -- Associando Personagens à tabela NPC
 INSERT INTO NPC (tipoNpc, idCharacter, salaAtual)
 VALUES
-('Mercante', 1, 1), -- Emerald Herald
+('Mercante', 1, 3), -- Emerald Herald
 ('Ferreiro', 2, 2), -- Blacksmith Lenigrast
-('Mercante', 3, 3), -- Straid of Olaphis
+('Mercante', 3, 6), -- Straid of Olaphis
 ('Inimigo', 4, 4), -- Black Wolf
-('Boss', 5, 8); -- The Last Giant
+('Boss', 5, 8), -- The Last Giant
+('', 6, 1);
 
 -- Inserindo detalhes em subtipos de NPC
 -- Mercante
@@ -38,7 +40,7 @@ INSERT INTO Ferreiro (idNpc) VALUES (2); -- Blacksmith Lenigrast
 -- Inimigo
 INSERT INTO Inimigo (hp, dano, idNpc)
 VALUES
-(50, 5, 4); -- Black wolf
+(50, 25, 4); -- Black wolf
 
 -- Boss
 INSERT INTO Boss (hp, dano, idNpc)
@@ -48,11 +50,11 @@ VALUES
 -- Inserindo itens na tabela Item
 INSERT INTO Item (nomeItem, tipoItem, itemDetalhes, preco)
 VALUES
-('Estus Flask', 'Consumível', 'Frasco que restaura HP ao ser consumido', 0), -- Consumível
+('Estus Flask', 'Consumível', 'Frasco que restaura HP ao ser consumido', 15), -- Consumível
 ('Claymore', 'Equipável', 'Espada longa com alto alcance e versatilidade', 500), -- Arma
-('Drangleic Shield', 'Equipável', 'Escudo resistente com alta defesa física', 500), -- Armadura
-('Green Blossom', 'Consumível', 'Aumenta temporariamente a regeneração de stamina', 300), -- Consumível
-('Elite Knight Armor', 'Equipável', 'Conjunto de armadura robusto com boa resistência', 1000); -- Armadura
+('Drangleic Shield', 'Equipável', 'Escudo resistente com alta defesa fisica', 500), -- Armadura
+('Green Blossom', 'Consumível', 'Aumenta temporariamente a regeneracao de stamina', 300), -- Consumível
+('Elite Knight Armor', 'Equipável', 'Conjunto de armadura robusto com boa resistencia', 1000); -- Armadura
 
 -- Associando itens à tabela Equipavel
 INSERT INTO Equipavel (tipoEquipavel, idItem)
@@ -75,7 +77,7 @@ VALUES
 -- Inserindo detalhes na tabela Consumivel
 INSERT INTO Consumivel (efeito, duracao, descricao, idItem)
 VALUES
-('Restaura 50% do HP total', NULL, 'Usado para recuperar saúde durante o combate', 1), -- Estus Flask
+('Restaura 50% do HP total', NULL, 'Usado para recuperar saude durante o combate', 1), -- Estus Flask
 ('Aumenta regeneração de stamina', 60, 'Ideal para combates prolongados ou fuga rápida', 4); -- Green Blossom
 
 -- Inserindo regiões na tabela Regiao
@@ -164,3 +166,9 @@ VALUES
 (2, 2), 
 (2, 3), 
 (2, 5);
+
+INSERT INTO Missao (nomeMissao, descricao, objetivoTipo, objetivoQuantidade)
+VALUES ('Caçador de Lobos', 'Mate 5 lobos para provar sua força.', 'derrotar', 5);
+
+INSERT INTO Missao_Recompensa (idMissao, coins)
+VALUES (1, 2000);
