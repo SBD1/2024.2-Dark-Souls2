@@ -8,7 +8,7 @@ def conectar_banco():
         conn = psycopg2.connect(
             dbname="dark_souls_mud",  # Nome do banco de dados
             user="postgres",          # Nome do usuário
-            password="teste",      # Senha do usuário
+            password="password",      # Senha do usuário
             host="localhost",         # Host do banco de dados
             port="5432"               # Porta padrão do PostgreSQL
         )
