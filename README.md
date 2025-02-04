@@ -17,8 +17,9 @@ Repositório criado pelo grupo 12 para a realização do trabalho da disciplina 
   - [Apresentação](https://www.youtube.com/watch?v=msGEqk2WApU)
 - Entrega 3
   - [JOGO FINAL](https://github.com/SBD1/2024.2-Dark-Souls2/tree/main/jogo)
+  - [DER Atualizado](https://github.com/SBD1/2024.2-Dark-Souls2/blob/main/docs/entrega3/DERatualizado.md)
   - [Apresentação](https://www.youtube.com/watch?v=O7coUsgKRA4)
-
+  
 ## Alunos
 
 | Nome                                                               | Matrícula |
